@@ -54,13 +54,13 @@ The key is read only from `.env`, which is git-ignored, and is never hard-coded.
    - Two HIGH mismatches are flagged, the share of income going to EMIs is above 50%, and the result is **Approve reduced amount (about ₹1L instead of ₹2L)**.
    - The borrower hears the decision in Hindi.
 
-## Running-loan mode: "My running loan"
+## Existing-loan mode
 After disbursal, the same borrower can call Sakhi back and ask, in any language:
 - **Next installment**: amount, due date, and the principal and interest split
 - **Total interest**: over the whole loan, how much is paid so far, and how much is left
 - **Remaining EMIs**: how many are paid, how many are left, and when the last one falls due
 
-Switch to **💳 My running loan** in the phone panel. Then tap a quick question, speak, or press **Demo Qs**. The lender side shows the account summary and the full repayment schedule, and highlights the figures Sakhi just quoted.
+Use the switch at the top of the page: **📝 New application** or **💳 Existing loan**. The whole page follows it: Sakhi's role and greeting, the chat, the quick questions, the input hint, and the lender panel (application, document check and memo, or the loan account). You can open `http://localhost:8000/#existing` to go straight to the existing-loan view. In that view, tap a quick question, speak, or press **Demo Qs**. The lender side shows the account summary and the full repayment schedule, and highlights the figures Sakhi just quoted.
 
 For now this uses a **sample loan** (`SAMPLE_LOAN` in `server.py`): Ramesh's ₹1,00,000 reduced approval at 22% over 24 months, first EMI on 5 May 2026. Every EMI whose due date has passed counts as paid. The schedule is reducing-balance amortisation, computed in code (`loan_status()`). The model only reads those numbers back in the borrower's language and never calculates figures itself. To use real data, replace `SAMPLE_LOAN`/`loan_status()` with a lookup in your loan book.
 

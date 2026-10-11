@@ -3,149 +3,269 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bol-Ke-Loan</title>
+<title>Bol-Ke-Loan · New application</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Devanagari:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1b2f; --muted:#6b6880; --line:#e7e2d9;
-  --brand:#2d2a6e; --brand2:#4b45c6; --saffron:#f08a24; --saffron-soft:#fff1e2;
-  --green:#14855f; --green-soft:#e3f5ee; --red:#c8372d; --red-soft:#fdeceb; --amber:#b7791f; --amber-soft:#fdf3dc;
-  --shadow:0 1px 2px rgba(20,18,50,.06),0 8px 24px rgba(20,18,50,.06);
+  color-scheme: light;
+  --paper:#f3f0e8; --surface:#fffdf8; --sunk:#f7f4ec; --ink:#1b1a17; --ink-2:#3d3a33; --muted:#77716a; --faint:#a8a197;
+  --rule:#e3ddd0; --rule-2:#cfc7b6;
+  --accent:#1f4d3a; --accent-2:#2f6b52; --accent-soft:#e3ece5;
+  --flag:#b3361a; --flag-soft:#f8e6df; --warn:#94650d; --warn-soft:#f6ecd4;
+  --sans:"IBM Plex Sans","IBM Plex Sans Devanagari","Noto Sans","Noto Sans Devanagari",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",sans-serif}
-header{display:flex;align-items:center;gap:16px;padding:14px 24px;background:var(--brand);color:#fff;flex-wrap:wrap}
-.logo{font-weight:800;font-size:22px;letter-spacing:-.3px}
-.logo span{color:var(--saffron)}
-.tag{opacity:.85;font-size:14px}
-.models{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
-.chip{font-size:12px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);white-space:nowrap}
-.chip.on{background:var(--saffron);border-color:var(--saffron);color:#1d1b2f;font-weight:700}
-main{display:grid;grid-template-columns:minmax(340px,430px) 1fr;gap:20px;padding:20px 24px;max-width:1500px;margin:0 auto}
-@media(max-width:900px){main{grid-template-columns:1fr;padding:16px}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
-.phone{display:flex;flex-direction:column;height:calc(100vh - 110px);min-height:660px;position:sticky;top:20px}
-@media(max-width:900px){.phone{position:static;height:640px}}
-.ph-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
-.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),#f7b267);display:grid;place-items:center;font-weight:800;color:#3b1d00}
-.ph-head b{display:block}
-.ph-head small{color:var(--muted)}
-.ph-head select{margin-left:auto}
-select,button,input[type=text]{font:inherit}
-select{padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:#fff}
-.chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#fbfaf7}
-.b{max-width:86%;padding:10px 12px;border-radius:14px;font-size:15.5px}
-.b .en{display:block;margin-top:5px;font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:4px}
-.b.ai{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
-.b.me{background:var(--brand2);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
-.b.me .en{color:#dcdaff;border-color:rgba(255,255,255,.25)}
-.b .lang{font-size:11px;font-weight:700;background:var(--saffron-soft);color:#8a4a00;border-radius:6px;padding:1px 6px;margin-left:6px}
-.b.me .lang{background:rgba(255,255,255,.2);color:#fff}
-.sys{align-self:center;font-size:12.5px;color:var(--muted);text-align:center}
-.status{padding:8px 16px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);min-height:36px;display:flex;align-items:center;gap:8px}
-.dot{width:8px;height:8px;border-radius:50%;background:#ccc}
-.status.busy .dot{background:var(--saffron);animation:p 1s infinite}
-@keyframes p{50%{opacity:.3}}
-.controls{padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px}
-.mic-row{display:flex;gap:10px;align-items:center}
-.mic{flex:1;height:56px;border-radius:14px;border:0;background:var(--saffron);color:#2a1600;font-weight:800;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
-.mic.rec{background:var(--red);color:#fff;animation:p 1.2s infinite}
-.mic:disabled{opacity:.5;cursor:not-allowed}
-.btn{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:600}
-.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
-.btn.ghost{background:transparent}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.txt-row{display:flex;gap:8px}
-.txt-row input{flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--line)}
-.right{display:flex;flex-direction:column;gap:20px}
-.card{padding:18px 20px}
-.card h2{margin:0 0 4px;font-size:17px;display:flex;align-items:center;gap:10px}
-.step{width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-size:13px;display:grid;place-items:center;flex:none}
-.card .sub{color:var(--muted);font-size:13px;margin:0 0 14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
-.f{border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:56px;transition:background .6s}
-.f label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
-.f div{font-weight:650;margin-top:2px;word-break:break-word}
-.f.empty div{color:#c3bfcf;font-weight:400}
-.f.req label::after{content:" *";color:var(--saffron)}
-.f.flash{background:var(--saffron-soft)}
-.progress{height:6px;background:#efebe4;border-radius:9px;overflow:hidden;margin:4px 0 14px}
-.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--saffron),var(--brand2));transition:width .5s}
-.doc-row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
-.drop{width:220px;min-height:150px;border:2px dashed var(--line);border-radius:12px;display:grid;place-items:center;text-align:center;color:var(--muted);cursor:pointer;overflow:hidden;font-size:13px;padding:8px}
-.drop img{max-width:100%;max-height:260px;display:block}
-.doc-actions{display:flex;flex-direction:column;gap:8px;min-width:200px}
-.facts{flex:1;min-width:260px}
-table{width:100%;border-collapse:collapse;font-size:14px}
-td,th{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-th{font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600}
-details{margin-top:8px;font-size:13px;color:var(--muted)}
-pre{white-space:pre-wrap;background:#faf8f4;border:1px solid var(--line);border-radius:8px;padding:10px;max-height:220px;overflow:auto;font-size:12px}
-.verdict{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
-.badge{font-weight:800;padding:8px 14px;border-radius:10px;font-size:15px}
-.badge.APPROVE{background:var(--green-soft);color:var(--green)}
-.badge.APPROVE_REDUCED{background:var(--amber-soft);color:var(--amber)}
-.badge.REFER{background:var(--red-soft);color:var(--red)}
-.headline{font-size:16px;font-weight:650;flex:1;min-width:240px}
-.risk{width:180px}
-.risk small{color:var(--muted);font-size:12px}
-.risk .bar{height:10px;border-radius:9px;background:linear-gradient(90deg,#3bb07c,#f0b429,#e0523f);position:relative;margin-top:4px}
-.risk .bar i{position:absolute;top:-4px;width:4px;height:18px;background:var(--ink);border-radius:2px}
-.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px}
-.tile{background:#faf8f4;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-.tile small{display:block;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
-.tile b{font-size:18px}
-.tile.bad b{color:var(--red)} .tile.good b{color:var(--green)}
-.vs h3{margin:6px 0 8px;font-size:15px}
-.sev{font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;text-transform:uppercase}
-.sev.high{background:var(--red-soft);color:var(--red)} .sev.medium{background:var(--amber-soft);color:var(--amber)} .sev.low{background:#eef0f7;color:#555}
-.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:14px}
-.cols h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
-.cols ul{margin:0;padding-left:18px}
-.note{background:#faf8f4;border-left:4px solid var(--brand2);padding:10px 14px;border-radius:6px;margin-top:14px}
-.voice{background:var(--saffron-soft);border-left:4px solid var(--saffron);padding:12px 14px;border-radius:6px;margin-top:12px;font-size:16px}
-.voice .btn{margin-top:8px}
-.err{background:var(--red-soft);color:var(--red);padding:8px 12px;border-radius:8px;font-size:13px;margin-top:8px}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+svg{display:block}
 .hidden{display:none!important}
-.meta{font-size:12px;color:var(--muted)}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px}
-@keyframes s{to{transform:rotate(360deg)}}
-.modes{display:flex;gap:6px;padding:8px 16px;border-bottom:1px solid var(--line)}
-.modes button{flex:1;padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:650}
-.modes button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
-.stack{display:flex;flex-direction:column;gap:20px}
-.quick{display:flex;gap:6px}
-.quick button{flex:1;white-space:nowrap;font:inherit;font-size:12.5px;padding:5px 6px;border-radius:999px;border:1px solid #f5c99a;background:var(--saffron-soft);color:#6b3a00;cursor:pointer}
-.tile span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
-.tile{transition:background .6s,border-color .6s}
-.tile.flash{background:var(--saffron-soft);border-color:var(--saffron)}
-.loan-head{display:flex;gap:8px 20px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:0 0 10px}
-.loan-head b{color:var(--ink)}
-.sched{max-height:330px;overflow:auto;position:relative;border:1px solid var(--line);border-radius:10px}
-.sched th{position:sticky;top:0;background:#fff}
-.sched td,.sched th{text-align:right} .sched td:first-child,.sched th:first-child,.sched td:nth-child(2),.sched th:nth-child(2){text-align:left}
-tr.paid td{color:var(--muted)}
-tr.next td{background:var(--saffron-soft);font-weight:700}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.meta{font-size:12.5px;color:var(--muted)}
+.err{margin-top:10px;padding:9px 12px;border-left:2px solid var(--flag);background:var(--flag-soft);color:var(--flag);font-size:13px}
+.spinner{display:inline-block;width:12px;height:12px;border:1.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-1px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{opacity:.35}}
+
+/* ---------- top bar */
+.top{display:flex;align-items:stretch;gap:28px;padding:0 28px;background:var(--surface);border-bottom:1px solid var(--rule);height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;letter-spacing:-.01em;white-space:nowrap}
+.brand-mark{width:26px;height:26px;border-radius:5px;background:var(--accent);color:#f3efe4;display:grid;place-items:center;font:600 14px/1 var(--sans)}
+.tabs{display:flex;gap:4px}
+.tabs button{position:relative;border:0;background:none;padding:0 12px;cursor:pointer;color:var(--muted);font-weight:500;font-size:14px}
+.tabs button:hover{color:var(--ink)}
+.tabs button.on{color:var(--ink)}
+.tabs button.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;background:var(--accent)}
+.pipeline{margin-left:auto;display:flex;align-items:center;gap:14px;font:12px/1 var(--mono);color:var(--faint)}
+.chip{display:flex;align-items:center;gap:6px;white-space:nowrap;transition:color .2s}
+.chip i{width:6px;height:6px;border-radius:50%;background:var(--rule-2);transition:background .2s}
+.chip.on{color:var(--ink)}
+.chip.on i{background:var(--accent);animation:pulse 1s infinite}
+
+/* ---------- layout */
+main{display:grid;grid-template-columns:400px minmax(0,1fr);gap:24px;padding:24px 28px 40px;max-width:1440px;margin:0 auto;align-items:start}
+@media (max-width:1000px){ main{grid-template-columns:1fr;padding:16px} .pipeline{display:none} .top{padding:0 16px;gap:16px} }
+@media (max-width:560px){ .brand span{display:none} }
+
+/* ---------- call panel */
+.call{background:var(--surface);border:1px solid var(--rule);border-radius:6px;display:flex;flex-direction:column;height:calc(100vh - 104px);min-height:600px;position:sticky;top:24px}
+@media (max-width:1000px){ .call{position:static;height:640px} }
+.call-h{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--rule)}
+.avatar{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent);display:grid;place-items:center;font:600 16px/1 "IBM Plex Sans Devanagari",var(--sans);flex:none}
+.who b{display:block;font-weight:600;font-size:14.5px}
+.who small{display:block;color:var(--muted);font-size:12.5px}
+.call-h select{margin-left:auto;border:1px solid var(--rule);background:var(--surface);border-radius:4px;padding:5px 6px;font-size:13px;max-width:130px}
+.chat{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:12px}
+.b{max-width:88%;font-size:15px;line-height:1.55}
+.b .t{padding:9px 12px;border-radius:10px}
+.b.ai{align-self:flex-start}
+.b.ai .t{background:var(--sunk);border-top-left-radius:3px}
+.b.me{align-self:flex-end}
+.b.me .t{background:var(--ink);color:#f6f3ec;border-top-right-radius:3px}
+.b .lang{display:block;margin:4px 4px 0;font:500 10.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+.b.me .lang{text-align:right}
+.b .en{display:block;margin:5px 4px 0;font-size:12.5px;line-height:1.45;color:var(--muted)}
+.b.me .en{text-align:right}
+.sys{align-self:center;max-width:88%;text-align:center;font-size:12.5px;color:var(--muted);line-height:1.5}
+.sys.bad{color:var(--flag)}
+.intro{margin:auto 0;align-self:stretch;text-align:left;padding:4px 4px 8px}
+.intro h3{margin:0 0 6px;font-size:15px;font-weight:600;color:var(--ink)}
+.intro p{margin:0;font-size:13.5px;color:var(--muted)}
+.status{display:flex;align-items:center;gap:8px;padding:8px 16px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--muted);min-height:34px}
+.status .dot{width:6px;height:6px;border-radius:50%;background:var(--rule-2)}
+.status.busy .dot{background:var(--accent);animation:pulse 1s infinite}
+.controls{padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.quick{display:flex;gap:6px;flex-wrap:wrap}
+.quick button{border:1px solid var(--rule-2);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer;color:var(--ink-2)}
+.quick button:hover{border-color:var(--accent);color:var(--accent)}
+.composer{display:flex;gap:8px;align-items:center}
+.mic{width:44px;height:44px;flex:none;border-radius:50%;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;position:relative;transition:background .15s}
+.mic:hover:not(:disabled){background:var(--accent-2)}
+.mic:disabled{background:var(--rule-2);cursor:not-allowed}
+.mic.rec{background:var(--flag)}
+.mic.rec::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--flag);animation:pulse 1.1s infinite}
+.field{flex:1;display:flex;align-items:center;border:1px solid var(--rule-2);border-radius:22px;background:var(--surface);padding:0 4px 0 14px;height:44px}
+.field:focus-within{border-color:var(--accent)}
+.field input{flex:1;min-width:0;border:0;outline:0;background:none;font-size:14px}
+.field input:disabled{cursor:not-allowed}
+.send{width:34px;height:34px;border-radius:50%;border:0;background:none;color:var(--accent);display:grid;place-items:center;cursor:pointer}
+.send:disabled{color:var(--faint);cursor:not-allowed}
+.row{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:36px;padding:0 14px;border-radius:5px;border:1px solid var(--rule-2);background:var(--surface);cursor:pointer;font-weight:500;font-size:13.5px;white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--ink-2)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:#f6f3ec}
+.btn.primary:hover:not(:disabled){background:#000}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.link{border:0;background:none;padding:0;height:auto;color:var(--accent);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.btn.oncall,.btn.oncall:disabled{opacity:1;background:var(--accent-soft);border-color:var(--accent-soft);color:var(--accent);cursor:default}
+.btn .live{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.6s infinite}
+.toggle{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none}
+.toggle input{appearance:none;width:28px;height:16px;border-radius:9px;background:var(--rule-2);position:relative;cursor:pointer;margin:0;transition:background .15s}
+.toggle input::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .15s}
+.toggle input:checked{background:var(--accent)}
+.toggle input:checked::after{left:14px}
+
+/* ---------- lender sheet */
+.desk{min-width:0}
+.pagehead{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin:2px 0 16px}
+.pagehead h1{margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em}
+.pagehead p{margin:0;color:var(--muted);font-size:14px}
+.sheet{background:var(--surface);border:1px solid var(--rule);border-radius:6px}
+.sec{padding:22px 26px 26px}
+.sec + .sec{border-top:1px solid var(--rule)}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.sec-h .n{font:500 12px/1 var(--mono);color:var(--faint)}
+.sec-h h2{margin:0;font-size:16px;font-weight:600;letter-spacing:-.01em}
+.sec-h .sec-meta{margin-left:auto;font:12px/1 var(--mono);color:var(--muted)}
+.sec-sub{margin:0 0 18px 30px;color:var(--muted);font-size:13.5px;max-width:70ch}
+.sec-body{margin-left:30px}
+@media (max-width:700px){ .sec{padding:18px 16px} .sec-sub,.sec-body{margin-left:0} }
+.bar{height:3px;background:var(--rule);border-radius:2px;overflow:hidden;margin:0 0 18px 30px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .5s}
+@media (max-width:700px){ .bar{margin-left:0} }
+
+/* application form */
+.form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 32px}
+@media (max-width:1180px){ .form{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:640px){ .form{grid-template-columns:1fr;gap:20px} }
+.fgroup h3{margin:0 0 4px;font:500 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.fgroup dl{margin:0}
+.frow{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dotted var(--rule-2);transition:background .8s}
+.frow dt{color:var(--muted);font-size:13.5px;white-space:nowrap}
+.frow dt sup{color:var(--accent);font-size:10px;margin-left:2px}
+.frow dd{margin:0;font-weight:500;font-size:14px;text-align:right;word-break:break-word}
+.frow dd.num{font-weight:500}
+.frow.empty dd{color:var(--faint);font-weight:400}
+.frow.flash{background:var(--accent-soft)}
+
+/* document */
+.doc{display:grid;grid-template-columns:200px 190px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:1180px){ .doc{grid-template-columns:200px minmax(0,1fr)} .facts{grid-column:1/-1} }
+@media (max-width:560px){ .doc{grid-template-columns:1fr} }
+.drop{display:grid;place-items:center;min-height:150px;border:1px dashed var(--rule-2);border-radius:5px;background:var(--sunk);color:var(--muted);text-align:center;font-size:12.5px;cursor:pointer;padding:12px;overflow:hidden}
+.drop:hover{border-color:var(--accent);color:var(--accent)}
+.drop svg{margin:0 auto 8px}
+.drop img{max-width:100%;max-height:240px;display:block;border-radius:3px}
+.doc-actions{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.doc-actions select{width:100%;border:1px solid var(--rule-2);background:var(--surface);border-radius:5px;padding:7px 8px;font-size:13px}
+.doc-actions .btn.primary{width:100%}
+.facts:empty{display:none}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font:500 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);text-align:left;padding:0 10px 8px 0;border-bottom:1px solid var(--rule-2)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.kv td:first-child{color:var(--muted);width:44%}
+.kv td:last-child{font-weight:500}
+details{margin-top:12px;font-size:13px;color:var(--muted)}
+summary{cursor:pointer}
+pre{white-space:pre-wrap;background:var(--sunk);border:1px solid var(--rule);border-radius:4px;padding:12px;max-height:220px;overflow:auto;font:12px/1.5 var(--mono);color:var(--ink-2)}
+
+/* decision */
+.verdict{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:20px;align-items:center;margin:20px 0 22px;padding-bottom:20px;border-bottom:1px solid var(--rule)}
+@media (max-width:760px){ .verdict{grid-template-columns:1fr} }
+.stamp{display:inline-block;border:1.5px solid currentColor;border-radius:3px;padding:6px 10px;font:600 12px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.stamp.APPROVE{color:var(--accent)} .stamp.APPROVE_REDUCED{color:var(--warn)} .stamp.REFER{color:var(--flag)}
+.headline{font-size:17px;font-weight:500;letter-spacing:-.01em;line-height:1.4}
+.risk{min-width:150px}
+.risk small{display:block;font:500 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
+.risk b{font:600 22px/1 var(--mono)} .risk b span{font-size:13px;color:var(--muted);font-weight:400}
+.segs{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;margin-top:8px}
+.segs i{height:5px;background:var(--rule);border-radius:1px}
+.figs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--rule);margin-bottom:24px}
+@media (max-width:900px){ .figs{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.fig{padding:12px 14px 12px 0;border-bottom:1px solid var(--rule);transition:background .8s}
+.fig small{display:block;font:500 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.fig b{display:block;margin-top:4px;font:500 19px/1.2 var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.fig span{display:block;margin-top:3px;font-size:12.5px;color:var(--muted)}
+.fig.bad b{color:var(--flag)} .fig.good b{color:var(--accent)}
+.fig.flash{background:var(--accent-soft)}
+h3.sub{margin:0 0 10px;font-size:14px;font-weight:600}
+.sev{display:inline-flex;align-items:center;gap:6px;font:500 11.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.05em}
+.sev::before{content:"";width:8px;height:8px;border-radius:1px;background:var(--faint)}
+.sev.high{color:var(--flag)} .sev.high::before{background:var(--flag)}
+.sev.medium{color:var(--warn)} .sev.medium::before{background:var(--warn)}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:24px}
+@media (max-width:760px){ .cols{grid-template-columns:1fr} }
+.cols h4{margin:0 0 8px;font:500 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.cols ul{margin:0;padding:0;list-style:none}
+.cols li{padding:6px 0;border-bottom:1px solid var(--rule);font-size:13.5px}
+.note{margin:24px 0 0;padding:2px 0 2px 16px;border-left:2px solid var(--ink);font-size:14px;color:var(--ink-2);max-width:80ch}
+.note b{display:block;font:500 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+.spoken{margin-top:20px;padding:14px 16px;background:var(--sunk);border-radius:5px;display:flex;gap:14px;align-items:flex-start}
+.spoken .txt{flex:1;font-size:15px}
+.spoken .txt small{display:block;font:500 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+.play{width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--rule-2);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:var(--accent)}
+.play:hover{border-color:var(--accent)}
+
+/* existing loan */
+.acct{display:flex;gap:6px 18px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin:0 0 22px 30px}
+.acct b{color:var(--ink);font-weight:500}
+@media (max-width:700px){ .acct{margin-left:0} }
+.hero{display:grid;grid-template-columns:minmax(260px,1fr) minmax(0,1.6fr);gap:28px;margin-bottom:26px}
+@media (max-width:1100px){ .hero{grid-template-columns:1fr} }
+.upnext{padding:18px 20px;background:var(--sunk);border-radius:5px;transition:background .8s}
+.upnext.flash{background:var(--accent-soft)}
+.upnext small{display:block;font:500 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.upnext .amt{display:block;margin:6px 0 2px;font:500 38px/1.05 var(--mono);letter-spacing:-.03em}
+.upnext .when{font-size:14px;color:var(--ink-2)}
+.upnext .when b{font-weight:600}
+.split{display:flex;height:6px;border-radius:3px;overflow:hidden;margin:16px 0 8px;background:var(--rule)}
+.split i{display:block;height:100%}
+.split .p{background:var(--accent)} .split .i{background:#c9a24a}
+.legend{display:flex;gap:16px;font-size:12.5px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:1px;margin-right:6px;vertical-align:0}
+.legend .p::before{background:var(--accent)} .legend .i::before{background:#c9a24a}
+.legend b{color:var(--ink);font-family:var(--mono);font-weight:500}
+.hero .figs{grid-template-columns:repeat(2,minmax(0,1fr));margin:0;align-self:start}
+.tl{margin:0 0 26px}
+.tl-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.ticks{display:grid;gap:3px;padding:3px 0}
+.ticks i{height:24px;border-radius:2px;border:1px solid var(--rule-2);background:var(--surface)}
+.ticks i.paid{background:var(--ink);border-color:var(--ink)}
+.ticks i.next{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--accent)}
+.tl-l{display:flex;justify-content:space-between;margin-top:8px;font:12px/1 var(--mono);color:var(--muted)}
+.tl.flash .ticks i.next{animation:pulse .5s 3}
+.sched{max-height:340px;overflow:auto;border:1px solid var(--rule);border-radius:5px;position:relative;transition:box-shadow .8s}
+.sched.flash{box-shadow:0 0 0 3px var(--accent-soft)}
+.sched table{font-size:13px;min-width:600px}
+.sched td{white-space:nowrap}
+.sched th{position:sticky;top:0;background:var(--surface);padding:10px 12px 8px;z-index:1}
+.sched td{padding:8px 12px}
+.sched td.r,.sched th.r{text-align:right}
+.sched tr.paid td{color:var(--faint)}
+.sched tr.next td{background:var(--accent-soft);color:var(--ink);font-weight:500}
+.sched tr.next td:first-child{box-shadow:inset 2px 0 0 var(--accent)}
+.pill{font:500 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em}
+tr.next .pill{color:var(--accent)}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">Bol-Ke-<span>Loan</span></div>
-  <div class="tag">Bolo apni bhasha mein. Jo bola vs jo dikhaya — AI underwriting for Bharat.</div>
-  <div class="models">
-    <span class="chip" id="c-stt">Saaras · speech</span>
-    <span class="chip" id="c-llm">Sarvam-105B · brain</span>
-    <span class="chip" id="c-tts">Bulbul v3 · voice</span>
-    <span class="chip" id="c-vis">Sarvam Vision · docs</span>
+<header class="top">
+  <div class="brand"><div class="brand-mark">₹</div><span>Bol-Ke-Loan</span></div>
+  <nav class="tabs" role="tablist" aria-label="Mode">
+    <button id="mApply" class="on" role="tab" aria-selected="true">New application</button>
+    <button id="mLoan" role="tab" aria-selected="false">Existing loan</button>
+  </nav>
+  <div class="pipeline" aria-label="Sarvam models in use">
+    <span class="chip" id="c-stt" title="Speech to text"><i></i>saaras:v4</span>
+    <span class="chip" id="c-llm" title="Language model"><i></i>sarvam-105b</span>
+    <span class="chip" id="c-tts" title="Text to speech"><i></i>bulbul:v3</span>
+    <span class="chip" id="c-vis" title="Document reading"><i></i>vision</span>
   </div>
 </header>
 
 <main>
   <!-- Borrower side -->
-  <section class="panel phone">
-    <div class="ph-head">
-      <div class="avatar">स</div>
-      <div><b>Sakhi · AI loan officer</b><small id="langLbl">Language: auto-detect</small></div>
-      <select id="lang" title="Borrower language">
+  <section class="call" aria-label="Call with Sakhi">
+    <div class="call-h">
+      <div class="avatar" aria-hidden="true">स</div>
+      <div class="who"><b id="agentLbl">Sakhi, loan officer</b><small id="langLbl">Language: auto-detect</small></div>
+      <select id="lang" aria-label="Borrower language">
         <option value="auto">Auto-detect</option>
         <option value="hi-IN">हिन्दी</option><option value="mr-IN">मराठी</option><option value="ta-IN">தமிழ்</option>
         <option value="te-IN">తెలుగు</option><option value="kn-IN">ಕನ್ನಡ</option><option value="bn-IN">বাংলা</option>
@@ -153,89 +273,96 @@ tr.next td{background:var(--saffron-soft);font-weight:700}
         <option value="od-IN">ଓଡ଼ିଆ</option><option value="en-IN">English</option>
       </select>
     </div>
-    <div class="modes">
-      <button id="mApply" class="on">📝 Apply for a loan</button>
-      <button id="mLoan">💳 My running loan</button>
-    </div>
     <div class="chat" id="chat">
-      <div class="sys">A shopkeeper or farmer applies for a loan just by talking, in any Indian language.<br>Press <b>Start call</b>, or run the <b>Demo borrower</b>.</div>
+      <div class="intro"><h3>Apply by talking</h3><p>The borrower answers Sakhi's questions in Hindi, Marathi, Tamil or any Indian language. Their application fills itself in English as they talk. Start a call, or run the demo borrower.</p></div>
     </div>
     <div class="chat hidden" id="chatLoan">
-      <div class="sys">Already have a loan? Ask about the next installment, total interest or remaining EMIs, in any Indian language.<br>Press <b>Start call</b>, tap a question below, or run the <b>Demo questions</b>.</div>
+      <div class="intro"><h3>Ask about your loan</h3><p>When is the next EMI, how much interest is left, how many EMIs remain. Ask in any Indian language, or tap a question below.</p></div>
     </div>
     <div class="status" id="status"><span class="dot"></span><span id="statusTxt">Ready</span></div>
     <div class="controls">
-      <div class="mic-row">
-        <button class="mic" id="mic" disabled>🎙️ <span id="micTxt">Tap to speak</span></button>
-      </div>
       <div class="quick hidden" id="quick">
-        <button data-q="next">📅 Next EMI</button>
-        <button data-q="interest">💰 Total interest</button>
-        <button data-q="remaining">🔢 EMIs left</button>
+        <button data-q="next">Next EMI?</button>
+        <button data-q="interest">Total interest?</button>
+        <button data-q="remaining">EMIs left?</button>
       </div>
-      <div class="txt-row">
-        <input type="text" id="txt" placeholder="…or type (Hindi, Hinglish, Tamil, anything)" disabled>
-        <button class="btn" id="send" disabled>Send</button>
+      <div class="composer">
+        <button class="mic" id="mic" disabled aria-label="Speak">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          <span class="sr" id="micTxt">Tap to speak</span>
+        </button>
+        <div class="field">
+          <input type="text" id="txt" placeholder="Or type in any language" disabled aria-label="Message">
+          <button class="send" id="send" disabled aria-label="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
       </div>
-      <div class="mic-row">
-        <button class="btn primary" id="start" style="flex:1">📞 Start call</button>
-        <button class="btn" id="demo" style="flex:1">▶ Demo borrower</button>
-        <label class="meta" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="voiceOn" checked>voice</label>
+      <div class="row">
+        <button class="btn primary" id="start"></button>
+        <button class="btn" id="demo">Run demo</button>
+        <label class="toggle"><input type="checkbox" id="voiceOn" checked>Voice</label>
       </div>
     </div>
   </section>
 
   <!-- Lender side -->
-  <section class="right">
-   <div class="stack" id="applyView">
-    <div class="panel card">
-      <h2><span class="step">1</span>Live loan application <span class="meta" id="formMeta" style="margin-left:auto"></span></h2>
-      <p class="sub">Filled automatically from the conversation and saved in English for the lender. Fields marked * are required.</p>
-      <div class="progress"><i id="prog"></i></div>
-      <div class="grid" id="form"></div>
-    </div>
+  <section class="desk">
+    <div class="pagehead"><h1 id="viewTitle">New application</h1><p id="tagline"></p></div>
 
-    <div class="panel card">
-      <h2><span class="step">2</span>Show your document — Sarvam Vision</h2>
-      <p class="sub">A photo of a bank passbook, bank statement or salary slip. Sarvam Vision reads it, then we compare it with what the borrower said.</p>
-      <div class="doc-row">
-        <label class="drop" id="drop"><input type="file" id="file" accept="image/*,application/pdf" hidden><span id="dropTxt">📷 Click to upload a photo<br>(passbook / statement / salary slip)</span></label>
-        <div class="doc-actions">
-          <button class="btn" id="sample">Use sample passbook</button>
-          <select id="docLang"><option value="en-IN">Document language: English</option><option value="hi-IN">Hindi</option><option value="mr-IN">Marathi</option><option value="ta-IN">Tamil</option><option value="te-IN">Telugu</option><option value="kn-IN">Kannada</option><option value="bn-IN">Bengali</option><option value="gu-IN">Gujarati</option></select>
-          <button class="btn primary" id="readDoc" disabled>🔍 Read with Sarvam Vision</button>
-          <span class="meta" id="docMeta"></span>
+    <div class="sheet" id="applyView">
+      <section class="sec">
+        <div class="sec-h"><span class="n">01</span><h2>Application</h2><span class="sec-meta" id="formMeta"></span></div>
+        <p class="sec-sub">Filled from the conversation and recorded in English. Fields marked <span style="color:var(--accent)">*</span> are required.</p>
+        <div class="bar"><i id="prog"></i></div>
+        <div class="sec-body"><div class="form" id="form"></div></div>
+      </section>
+
+      <section class="sec">
+        <div class="sec-h"><span class="n">02</span><h2>Document check</h2></div>
+        <p class="sec-sub">A photo of a passbook, bank statement or salary slip. Sarvam Vision reads it so it can be compared with what the borrower said.</p>
+        <div class="sec-body doc">
+          <label class="drop" id="drop"><input type="file" id="file" accept="image/*,application/pdf" hidden>
+            <span id="dropTxt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>Upload a photo<br>passbook, statement or salary slip</span></label>
+          <div class="doc-actions">
+            <select id="docLang" aria-label="Document language"><option value="en-IN">Document in English</option><option value="hi-IN">Hindi</option><option value="mr-IN">Marathi</option><option value="ta-IN">Tamil</option><option value="te-IN">Telugu</option><option value="kn-IN">Kannada</option><option value="bn-IN">Bengali</option><option value="gu-IN">Gujarati</option></select>
+            <button class="btn primary" id="readDoc" disabled>Read document</button>
+            <button class="btn link" id="sample">Use the sample passbook</button>
+            <span class="meta" id="docMeta"></span>
+          </div>
+          <div class="facts" id="facts"></div>
         </div>
-        <div class="facts" id="facts"></div>
-      </div>
+      </section>
+
+      <section class="sec">
+        <div class="sec-h"><span class="n">03</span><h2>Credit decision</h2><span class="sec-meta" id="memoMeta"></span></div>
+        <p class="sec-sub">What the borrower said, checked against what the document shows. The affordability maths is done in code; the borrower hears the outcome in their own language.</p>
+        <div class="sec-body">
+          <button class="btn primary" id="memoBtn" disabled>Run underwriting</button>
+          <div id="memo"></div>
+        </div>
+      </section>
     </div>
 
-    <div class="panel card">
-      <h2><span class="step">3</span>Underwriting memo — "Jo Bola vs Jo Dikhaya"</h2>
-      <p class="sub">An explainable credit decision for the lender, plus a spoken reply to the borrower in their own language.</p>
-      <button class="btn primary" id="memoBtn" disabled>⚖️ Generate underwriting memo</button>
-      <span class="meta" id="memoMeta"></span>
-      <div id="memo"></div>
+    <div class="sheet hidden" id="loanView">
+      <section class="sec">
+        <div class="sec-h"><span class="n">A/C</span><h2 id="loanTitle">Loan account</h2><span class="sec-meta" id="loanMeta"></span></div>
+        <div id="loanCard" class="sec-body" style="margin-top:14px"><span class="meta"><span class="spinner"></span>Loading account</span></div>
+      </section>
     </div>
-   </div>
-
-   <div class="stack hidden" id="loanView">
-    <div class="panel card">
-      <h2><span class="step">₹</span>Running loan account <span class="meta" id="loanMeta" style="margin-left:auto"></span></h2>
-      <p class="sub">Sample loan for now. The repayment schedule is computed in code; Sakhi only reads these numbers back to the borrower in their language.</p>
-      <div id="loanCard"><span class="meta"><span class="spinner"></span> Loading loan…</span></div>
-    </div>
-   </div>
   </section>
 </main>
 
 <script>
 const $ = s => document.querySelector(s);
-const FIELDS = [
-  ["full_name","Name",1],["age","Age"],["location","Location"],["occupation","Occupation",1],["years_in_business","Years in business"],
-  ["monthly_income","Monthly income ₹",1],["monthly_expenses","Monthly expenses ₹",1],["dependents","Dependents"],
-  ["existing_loans","Existing loans"],["existing_emi","Existing EMI ₹",1],["loan_amount","Loan asked ₹",1],["loan_purpose","Purpose",1],
-  ["tenure_months","Tenure (months)"],["collateral","Collateral"]];
+const ICON = {
+  phone:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>`,
+  play:`<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`,
+  doc:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>`};
+const GROUPS = [
+  ["Applicant", [["full_name","Name",1],["age","Age"],["location","Location"],["dependents","Dependents"]]],
+  ["Business and income", [["occupation","Occupation",1],["years_in_business","In business"],["monthly_income","Monthly income",1],["monthly_expenses","Monthly expenses",1]]],
+  ["Obligations and request", [["existing_loans","Existing loans"],["existing_emi","Existing EMI",1],["loan_amount","Amount asked",1],["loan_purpose","Purpose",1],["tenure_months","Tenure"],["collateral","Collateral"]]]];
 const MONEY = new Set(["monthly_income","monthly_expenses","existing_emi","loan_amount"]);
 const LANG_NAMES = {"hi-IN":"Hindi","mr-IN":"Marathi","ta-IN":"Tamil","te-IN":"Telugu","kn-IN":"Kannada","bn-IN":"Bengali","gu-IN":"Gujarati","ml-IN":"Malayalam","pa-IN":"Punjabi","od-IN":"Odia","en-IN":"English"};
 const S = {lang:null, history:[], form:{}, facts:null, started:false, busy:false, done:false, docFile:null, rec:null, audio:null,
@@ -246,6 +373,7 @@ const chatEl = () => isLoan() ? $("#chatLoan") : $("#chat");
 // ---------- helpers
 const inr = v => { const n = Number(String(v).replace(/[^\d.]/g,"")); return isFinite(n)&&String(v).trim()!=="" ? "₹"+Math.round(n).toLocaleString("en-IN") : (v??"—"); };
 const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shortDate = iso => new Date(iso+"T00:00:00").toLocaleDateString("en-IN",{month:"short",year:"numeric"});
 function status(t, busy=false, chip=null){ $("#statusTxt").textContent=t; $("#status").classList.toggle("busy",busy);
   document.querySelectorAll(".chip").forEach(c=>c.classList.remove("on")); if(chip) $("#c-"+chip).classList.add("on"); }
 async function api(path, body){
@@ -255,37 +383,42 @@ async function api(path, body){
   return j;
 }
 function bubble(role, text, en, lang){
+  const c=chatEl(); c.querySelector(".intro")?.remove();
   const d=document.createElement("div"); d.className="b "+(role==="assistant"?"ai":"me");
-  d.innerHTML = esc(text) + (lang?`<span class="lang">${LANG_NAMES[lang]||lang}</span>`:"") + (en?`<span class="en">${esc(en)}</span>`:"");
-  const c=chatEl(); c.appendChild(d); c.scrollTop=1e9; return d;
+  d.innerHTML = `<div class="t">${esc(text)}</div>` + (lang?`<span class="lang">${esc(LANG_NAMES[lang]||lang)}</span>`:"") + (en?`<span class="en">${esc(en)}</span>`:"");
+  c.appendChild(d); c.scrollTop=1e9; return d;
 }
-function sysMsg(t, err=false){ const d=document.createElement("div"); d.className="sys"; if(err) d.style.color="var(--red)"; d.innerHTML=t; const c=chatEl(); c.appendChild(d); c.scrollTop=1e9; }
-function setLang(l){ if(!l) return; S.lang=l; $("#langLbl").textContent="Language: "+(LANG_NAMES[l]||l)+($("#lang").value==="auto"?" (auto-detected)":""); }
+function sysMsg(t, err=false){ const d=document.createElement("div"); d.className="sys"+(err?" bad":""); d.innerHTML=t; const c=chatEl(); c.appendChild(d); c.scrollTop=1e9; }
+function setLang(l){ if(!l) return; S.lang=l; $("#langLbl").textContent=(LANG_NAMES[l]||l)+($("#lang").value==="auto"?", detected":""); }
 function stopAudio(){ if(S.audio){ S.audio.pause(); S.audio=null; } }
 async function play(list){
   if(!$("#voiceOn").checked || !list || !list.length){ status("Ready"); return; }
-  stopAudio(); status("Speaking · Bulbul v3", true, "tts");
+  stopAudio(); status("Speaking", true, "tts");
   for(const b64 of list){
     await new Promise(res=>{ const a=new Audio("data:audio/wav;base64,"+b64); S.audio=a; a.onended=res; a.onerror=res; a.play().catch(res); });
     if(!S.audio) break;
   }
   status("Ready");
 }
+function flashOff(sel, ms=2200){ setTimeout(()=>document.querySelectorAll(sel).forEach(e=>e.classList.remove("flash")), ms); }
 
 // ---------- form
+function fmtField(k,v){
+  if(MONEY.has(k)) return inr(v);
+  if(k==="tenure_months" && /^\d+$/.test(String(v))) return v+" months";
+  if(k==="years_in_business" && /^\d+(\.\d+)?$/.test(String(v))) return v+" years";
+  return v;
+}
 function renderForm(changed=[]){
-  const g=$("#form"); g.innerHTML="";
   let have=0, req=0;
-  for(const [k,label,r] of FIELDS){
+  $("#form").innerHTML = GROUPS.map(([title,fields])=>`<div class="fgroup"><h3>${title}</h3><dl>${fields.map(([k,label,r])=>{
     const v=S.form[k]; const has = v!==undefined && v!==null && v!=="";
     if(r){ req++; if(has) have++; }
-    const d=document.createElement("div"); d.className="f"+(has?"":" empty")+(r?" req":"")+(changed.includes(k)?" flash":"");
-    d.innerHTML=`<label>${label}</label><div>${has?esc(MONEY.has(k)?inr(v):v):"waiting…"}</div>`;
-    g.appendChild(d);
-  }
+    return `<div class="frow${has?"":" empty"}${changed.includes(k)?" flash":""}"><dt>${label}${r?"<sup>*</sup>":""}</dt><dd class="${MONEY.has(k)?"num":""}">${has?esc(fmtField(k,v)):"—"}</dd></div>`;
+  }).join("")}</dl></div>`).join("");
   $("#prog").style.width=(have/req*100)+"%";
-  $("#formMeta").textContent=`${have}/${req} required`;
-  if(changed.length) setTimeout(()=>document.querySelectorAll(".f.flash").forEach(e=>e.classList.remove("flash")),1400);
+  $("#formMeta").textContent=`${have} of ${req} required`;
+  if(changed.length) flashOff(".frow.flash",1400);
   $("#memoBtn").disabled = have<3;
 }
 
@@ -293,7 +426,9 @@ function renderForm(changed=[]){
 function syncControls(){
   const on = isLoan() ? S.loanStarted : S.started;
   $("#start").disabled=on; $("#mic").disabled=!on; $("#txt").disabled=!on; $("#send").disabled=!on;
-  $("#demo").textContent = isLoan() ? "▶ Demo Qs" : "▶ Demo borrower";
+  $("#start").innerHTML = on ? `<span class="live"></span>On call` : `${ICON.phone}Start call`;
+  $("#start").classList.toggle("oncall",on); $("#start").classList.toggle("primary",!on);
+  $("#demo").textContent = isLoan() ? "Demo questions" : "Run demo";
 }
 
 async function startCall(){
@@ -302,14 +437,14 @@ async function startCall(){
   if(loan) S.loanStarted=true; else S.started=true;
   syncControls();
   const sel=$("#lang").value; const l = sel==="auto" ? "hi-IN" : sel;
-  status("Connecting…", true, "tts");
+  status("Connecting", true, "tts");
   try{
     const g = await api("/api/greet",{lang:l, mode:S.mode});
     setLang(sel==="auto"? null : g.lang); if(sel!=="auto") setLang(g.lang);
-    bubble("assistant", g.reply, sel==="auto"?"Speak in any language — Sakhi will switch to it.":g.reply_en);
+    bubble("assistant", g.reply, sel==="auto"?"Speak in any language and Sakhi will switch to it.":g.reply_en);
     (loan ? S.loanHistory : S.history).push({role:"assistant",content:g.reply});
     await play(g.audio);
-  }catch(e){ sysMsg("⚠️ "+esc(e.message),true); status("Error"); }
+  }catch(e){ sysMsg(esc(e.message),true); status("Error"); }
 }
 
 async function sendText(text, mine=true, detected=null){
@@ -318,7 +453,7 @@ async function sendText(text, mine=true, detected=null){
   const loan=isLoan(), hist = loan ? S.loanHistory : S.history;
   const ub = mine ? bubble("user", text, null, detected) : null;
   hist.push({role:"user",content:text});
-  status("Thinking · Sarvam-105B", true, "llm");
+  status("Thinking", true, "llm");
   try{
     const lang = $("#lang").value!=="auto" ? $("#lang").value : (detected || S.lang || "hi-IN");
     const r = loan ? await api("/api/loan_ask",{text, history:hist.slice(0,-1), lang})
@@ -339,10 +474,10 @@ async function sendText(text, mine=true, detected=null){
     bubble("assistant", r.reply, r.reply_en && r.reply_en!=="(mock)" ? r.reply_en : null);
     S.history.push({role:"assistant",content:r.reply});
     $("#memoMeta").textContent="";
-    if(r.done && !S.done){ S.done=true; sysMsg("✅ Interview complete. Next: show a passbook or salary slip (Step 2)."); }
+    if(r.done && !S.done){ S.done=true; sysMsg("Interview complete. Next, add a passbook or salary slip in step 02."); }
     S.busy=false;
     await play(r.audio);
-  }catch(e){ S.busy=false; hist.pop(); sysMsg("⚠️ "+esc(e.message),true); status("Error — try again"); }
+  }catch(e){ S.busy=false; hist.pop(); sysMsg(esc(e.message),true); status("Something went wrong. Try again."); }
 }
 
 // ---------- mic -> 16k wav -> Saaras
@@ -365,23 +500,23 @@ async function toggleMic(){
   if(S.busy) return;
   stopAudio();
   let stream;
-  try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ sysMsg("⚠️ Microphone blocked. Allow mic access, or type instead.",true); return; }
+  try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ sysMsg("Microphone is blocked. Allow mic access in the browser, or type instead.",true); return; }
   const chunks=[]; const rec=new MediaRecorder(stream); S.rec=rec;
   rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
   rec.onstop=async()=>{
     clearTimeout(recTimer); stream.getTracks().forEach(t=>t.stop()); S.rec=null;
     $("#mic").classList.remove("rec"); $("#micTxt").textContent="Tap to speak";
-    status("Transcribing · Saaras", true, "stt");
+    status("Transcribing", true, "stt");
     try{
       const wav=await toWav16k(new Blob(chunks,{type:rec.mimeType}));
       const sel=$("#lang").value;
       const r=await api("/api/stt",{audio_b64:wav, lang: sel==="auto"?null:sel});
-      if(!r.transcript.trim()){ status("Didn't catch that — try again"); return; }
+      if(!r.transcript.trim()){ status("Didn't catch that. Try again."); return; }
       if(sel==="auto") setLang(r.language_code);
       await sendText(r.transcript, true, r.language_code);
-    }catch(e){ sysMsg("⚠️ "+esc(e.message),true); status("Error"); }
+    }catch(e){ sysMsg(esc(e.message),true); status("Error"); }
   };
-  rec.start(); $("#mic").classList.add("rec"); $("#micTxt").textContent="Listening… tap to stop"; status("Listening…", true, "stt");
+  rec.start(); $("#mic").classList.add("rec"); $("#micTxt").textContent="Listening, tap to stop"; status("Listening. Tap the mic again to stop.", true, "stt");
   recTimer=setTimeout(()=>S.rec&&S.rec.stop(), 25000); // REST STT limit ~30s
 }
 
@@ -431,38 +566,67 @@ async function quickAsk(key){
 }
 async function loadLoan(){
   try{ S.loan = await api("/api/loan",{}); renderLoan(); }
-  catch(e){ $("#loanCard").innerHTML=`<div class="err">${esc(e.message)}</div>`; }
+  catch(e){
+    const msg = e.message==="not found" ? "The server is running an older version without the loan feature. Restart it (Ctrl+C, then python server.py) and reload this page." : e.message;
+    $("#loanCard").innerHTML=`<div class="err">${esc(msg)}</div>`;
+  }
 }
 function renderLoan(topic){
   const L=S.loan; if(!L) return;
-  const nx=L.next_installment;
-  const tiles=[
-    ["next_installment","Next installment", nx?inr(nx.emi):"—", nx?`due ${nx.due_date_text} · in ${nx.days_left} days`:"loan closed"],
-    ["next_installment","Next EMI split", nx?`${inr(nx.principal)} + ${inr(nx.interest)}`:"—", "principal + interest"],
-    ["remaining_emis","EMIs remaining", `${L.emis_remaining} of ${L.tenure_months}`, `${L.emis_paid} paid · last on ${L.last_emi_text}`],
-    ["outstanding","Outstanding principal", inr(L.outstanding_principal), `of ${inr(L.principal)} borrowed`],
-    ["total_interest","Total interest", inr(L.total_interest), `${inr(L.interest_paid)} paid · ${inr(L.interest_remaining)} left`],
-    ["total_interest","Total payable", inr(L.total_payable), `${inr(L.amount_remaining)} still to pay`]];
+  const nx=L.next_installment, f=k=>topic===k?" flash":"";
+  const pPct = nx ? nx.principal/nx.emi*100 : 0;
+  $("#loanTitle").textContent = L.borrower;
   $("#loanMeta").textContent = `as of ${L.today_text}`;
   $("#loanCard").innerHTML=`
-    <div class="loan-head"><span>Loan <b>${esc(L.loan_id)}</b></span><span>Borrower <b>${esc(L.borrower)}</b></span>
-      <span><b>${esc(L.product)}</b></span><span><b>${inr(L.principal)}</b> @ <b>${L.interest_rate_pct}%</b> × <b>${L.tenure_months}m</b></span>
-      <span>EMI <b>${inr(L.emi)}</b> · ${esc(L.repayment_mode)}</span></div>
-    <div class="progress"><i style="width:${L.emis_paid/L.tenure_months*100}%"></i></div>
-    <div class="tiles">${tiles.map(([k,t,v,sub])=>`<div class="tile${k===topic?" flash":""}"><small>${t}</small><b>${esc(v)}</b><span>${esc(sub)}</span></div>`).join("")}</div>
-    <div class="sched"><table><tr><th>#</th><th>Due date</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Balance after</th><th>Status</th></tr>
-      ${L.schedule.map(x=>`<tr class="${x.status}"><td>${x.no}</td><td>${esc(x.due_date_text)}</td><td>${inr(x.emi)}</td><td>${inr(x.principal)}</td><td>${inr(x.interest)}</td><td>${inr(x.balance_after)}</td><td>${{paid:"✅ Paid",next:"⏭ Next",due:"Upcoming"}[x.status]}</td></tr>`).join("")}
+    <div class="acct" style="margin-left:0"><span>Account <b class="num">${esc(L.loan_id)}</b></span><span>${esc(L.product)}</span>
+      <span><b class="num">${inr(L.principal)}</b> at <b class="num">${L.interest_rate_pct}%</b> for <b class="num">${L.tenure_months}</b> months</span><span>${esc(L.repayment_mode)}</span></div>
+    <div class="hero">
+      <div class="upnext${f("next_installment")}">
+        <small>${nx?"Next installment":"Loan status"}</small>
+        <span class="amt">${nx?inr(nx.emi):"Closed"}</span>
+        <div class="when">${nx?`Due <b>${esc(nx.due_date_text)}</b>, in ${nx.days_left} day${nx.days_left===1?"":"s"}`:"All EMIs paid"}</div>
+        ${nx?`<div class="split"><i class="p" style="width:${pPct}%"></i><i class="i" style="width:${100-pPct}%"></i></div>
+        <div class="legend"><span class="p">Principal <b>${inr(nx.principal)}</b></span><span class="i">Interest <b>${inr(nx.interest)}</b></span></div>`:""}
+      </div>
+      <div class="figs">
+        <div class="fig${f("remaining_emis")}"><small>EMIs left</small><b>${L.emis_remaining} <span style="display:inline;font-size:13px">of ${L.tenure_months}</span></b><span>Last one ${esc(L.last_emi_text)}</span></div>
+        <div class="fig${f("outstanding")}"><small>Outstanding principal</small><b>${inr(L.outstanding_principal)}</b><span>of ${inr(L.principal)} borrowed</span></div>
+        <div class="fig${f("total_interest")}"><small>Total interest</small><b>${inr(L.total_interest)}</b><span>${inr(L.interest_paid)} paid, ${inr(L.interest_remaining)} to go</span></div>
+        <div class="fig${f("total_interest")}"><small>Total repayable</small><b>${inr(L.total_payable)}</b><span>${inr(L.amount_remaining)} still to pay</span></div>
+      </div>
+    </div>
+    <div class="tl${f("remaining_emis")}">
+      <div class="tl-h"><h3 class="sub" style="margin:0">Repayment so far</h3><span class="meta">${L.emis_paid} paid · ${L.emis_remaining} to go</span></div>
+      <div class="ticks" style="grid-template-columns:repeat(${L.tenure_months},1fr)">${L.schedule.map(x=>`<i class="${x.status}" title="EMI ${x.no}: ${esc(x.due_date_text)}, ${inr(x.emi)}"></i>`).join("")}</div>
+      <div class="tl-l"><span>${shortDate(L.schedule[0].due_date)}</span><span>${shortDate(L.last_emi_on)}</span></div>
+    </div>
+    <h3 class="sub">Schedule</h3>
+    <div class="sched${f("schedule")}"><table>
+      <tr><th>No.</th><th>Due</th><th class="r">EMI</th><th class="r">Principal</th><th class="r">Interest</th><th class="r">Balance</th><th class="r">Status</th></tr>
+      ${L.schedule.map(x=>`<tr class="${x.status}"><td class="num">${x.no}</td><td>${esc(x.due_date_text)}</td><td class="r num">${inr(x.emi)}</td><td class="r num">${inr(x.principal)}</td><td class="r num">${inr(x.interest)}</td><td class="r num">${inr(x.balance_after)}</td><td class="r"><span class="pill">${{paid:"Paid",next:"Next",due:""}[x.status]}</span></td></tr>`).join("")}
     </table></div>`;
   const sc=$("#loanCard .sched"), row=sc.querySelector("tr.next");
-  if(row) sc.scrollTop = row.offsetTop - 70;
-  if(topic) setTimeout(()=>document.querySelectorAll(".tile.flash").forEach(e=>e.classList.remove("flash")),2000);
+  if(row) sc.scrollTop = row.offsetTop - 80;
+  if(topic) flashOff("#loanCard .flash");
 }
-function setMode(m){
-  if(S.mode===m || S.busy || S.demo || S.rec) return;
+const MODE_UI = {
+  apply: {title:"Bol-Ke-Loan · New application", view:"New application", agent:"Sakhi, loan officer",
+          tag:"Speak in your own language. We check what was said against what the documents show.",
+          ph:"Or type in any language"},
+  loan:  {title:"Bol-Ke-Loan · Existing loan", view:"Existing loan", agent:"Sakhi, loan servicing",
+          tag:"Next EMI, interest and EMIs left, answered in the borrower's language.",
+          ph:"Or ask: agli EMI kab hai?"}};
+function setMode(m, force=false){
+  if(S.mode===m && !force) return;
+  if(S.busy || S.demo || S.rec){ status("Wait for Sakhi to finish, then switch."); return; }
   stopAudio(); status("Ready"); S.mode=m;
-  $("#mApply").classList.toggle("on",m==="apply"); $("#mLoan").classList.toggle("on",m==="loan");
-  for(const [id,show] of [["#chat",m==="apply"],["#applyView",m==="apply"],["#chatLoan",m==="loan"],["#loanView",m==="loan"],["#quick",m==="loan"]])
+  const ui=MODE_UI[m];
+  for(const [id,on] of [["#mApply",m==="apply"],["#mLoan",m==="loan"]]){ $(id).classList.toggle("on",on); $(id).setAttribute("aria-selected",on); }
+  for(const [id,show] of [["#chat",m==="apply"],["#applyView",m==="apply"],["#c-vis",m==="apply"],
+                          ["#chatLoan",m==="loan"],["#loanView",m==="loan"],["#quick",m==="loan"]])
     $(id).classList.toggle("hidden",!show);
+  document.title=ui.title; $("#viewTitle").textContent=ui.view; $("#agentLbl").textContent=ui.agent; $("#tagline").textContent=ui.tag; $("#txt").placeholder=ui.ph;
+  try{ history.replaceState(null,"",m==="loan"?"#existing":location.pathname); }catch(e){}
   syncControls();
   if(m==="loan" && !S.loan) loadLoan();
 }
@@ -471,7 +635,7 @@ function setMode(m){
 function setDoc(file){
   S.docFile=file; $("#readDoc").disabled=false;
   const url=URL.createObjectURL(file);
-  $("#dropTxt").innerHTML = file.type.startsWith("image/") ? `<img src="${url}" alt="document">` : "📄 "+esc(file.name);
+  $("#dropTxt").innerHTML = file.type.startsWith("image/") ? `<img src="${url}" alt="Uploaded document">` : `${ICON.doc}${esc(file.name)}`;
 }
 async function useSample(){
   const b=await (await fetch("/sample_passbook.png")).blob();
@@ -480,74 +644,76 @@ async function useSample(){
 const fileToB64 = f => new Promise((res,rej)=>{const r=new FileReader(); r.onload=()=>res(r.result.split(",")[1]); r.onerror=rej; r.readAsDataURL(f);});
 async function readDoc(){
   if(!S.docFile) return;
-  $("#readDoc").disabled=true; $("#docMeta").innerHTML='<span class="spinner"></span> Sarvam Vision is reading the document… (about 10–40s)';
-  status("Reading document · Sarvam Vision", true, "vis");
+  $("#readDoc").disabled=true; $("#docMeta").innerHTML='<span class="spinner"></span>Reading, usually 10 to 40 seconds';
+  status("Reading document", true, "vis");
   try{
     const r=await api("/api/doc",{image_b64:await fileToB64(S.docFile), filename:S.docFile.name, mime:S.docFile.type||"image/png", doc_lang:$("#docLang").value});
     S.facts=r.facts; renderFacts(r);
-    $("#docMeta").textContent=`Read in ${(r.ms/1000).toFixed(1)}s`;
+    $("#docMeta").textContent=`Read in ${(r.ms/1000).toFixed(1)} s`;
     $("#memoBtn").disabled=false;
   }catch(e){ $("#docMeta").innerHTML=`<div class="err">${esc(e.message)}</div>`; }
   $("#readDoc").disabled=false; status("Ready");
 }
 function renderFacts(r){
-  const f=r.facts||{}; const rows=[
-    ["Document",f.doc_type],["Account holder",f.account_holder_name],["Bank / employer",f.bank_or_employer],["Period",f.period],
-    ["Avg monthly credits",f.avg_monthly_credits!=null?inr(f.avg_monthly_credits):null],["Salary / regular income",f.salary_or_regular_income!=null?inr(f.salary_or_regular_income):null],
-    ["EMI / loan debits per month",f.emi_or_loan_debits_monthly!=null?inr(f.emi_or_loan_debits_monthly):null],["EMI details",f.emi_details],
-    ["Closing balance",f.closing_balance!=null?inr(f.closing_balance):null],["Bounces / penalties",f.bounced_or_penalty_charges],["Observations",f.other_observations]
+  const f=r.facts||{}, money=v=>v!=null?inr(v):null; const rows=[
+    ["Document",f.doc_type],["Account holder",f.account_holder_name],["Bank or employer",f.bank_or_employer],["Period",f.period],
+    ["Average monthly credits",money(f.avg_monthly_credits),1],["Salary or regular income",money(f.salary_or_regular_income),1],
+    ["EMI or loan debits a month",money(f.emi_or_loan_debits_monthly),1],["EMI details",f.emi_details],
+    ["Closing balance",money(f.closing_balance),1],["Bounces or penalties",f.bounced_or_penalty_charges],["Observations",f.other_observations]
   ].filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=="");
-  $("#facts").innerHTML=`<table><tr><th colspan=2>What the document shows</th></tr>${rows.map(([k,v])=>`<tr><td class="meta">${k}</td><td><b>${esc(v)}</b></td></tr>`).join("")}</table>
-  <details><summary>Raw text read by Sarvam Vision</summary><pre>${esc(r.markdown)}</pre></details>`;
+  $("#facts").innerHTML=`<table class="kv"><tr><th colspan=2>What the document shows</th></tr>${rows.map(([k,v,n])=>`<tr><td>${k}</td><td class="${n?"num":""}">${esc(v)}</td></tr>`).join("")}</table>
+  <details><summary>Raw text from Sarvam Vision</summary><pre>${esc(r.markdown)}</pre></details>`;
 }
 
 // ---------- memo
 async function makeMemo(){
-  $("#memoBtn").disabled=true; $("#memoMeta").innerHTML=' <span class="spinner"></span> Underwriting with Sarvam-105B…';
-  status("Underwriting · Sarvam-105B", true, "llm");
+  $("#memoBtn").disabled=true; $("#memoMeta").innerHTML='<span class="spinner"></span>Underwriting';
+  status("Underwriting", true, "llm");
   try{
     const m=await api("/api/memo",{form:S.form, facts:S.facts, lang:S.lang||"hi-IN"});
-    renderMemo(m); $("#memoMeta").textContent=` done in ${(m.ms/1000).toFixed(1)}s`;
-    sysMsg("📋 Decision sent to the borrower in "+(LANG_NAMES[S.lang]||"their language"));
+    renderMemo(m); $("#memoMeta").textContent=`${(m.ms/1000).toFixed(1)} s`;
+    sysMsg("Decision shared with the borrower in "+(LANG_NAMES[S.lang]||"their language")+".");
     bubble("assistant", m.borrower_message);
     await play(m.audio);
-  }catch(e){ $("#memoMeta").innerHTML=`<div class="err">${esc(e.message)}</div>`; status("Error"); }
+  }catch(e){ $("#memoMeta").textContent=""; $("#memo").innerHTML=`<div class="err">${esc(e.message)}</div>`; status("Error"); }
   $("#memoBtn").disabled=false;
 }
 function renderMemo(m){
   const n=m.numbers||{}; const risk=Math.max(0,Math.min(100,Number(m.risk_score)||0));
-  const dec=(m.decision||"REFER").toUpperCase(); const decTxt={APPROVE:"✅ APPROVE",APPROVE_REDUCED:"🟡 APPROVE — REDUCED AMOUNT",REFER:"🔴 REFER — FIELD CHECK"}[dec]||dec;
-  const incomeGap = n.said_income&&n.doc_income ? (n.said_income-n.doc_income)/n.doc_income : 0;
-  const tiles=[
-    ["Income — said", n.said_income!=null?inr(n.said_income):"—"],
-    ["Income — document", n.doc_income!=null?inr(n.doc_income):"no document", incomeGap>0.15?"bad":""],
-    ["Existing EMI (said / found)", `${inr(n.said_emi||0)} / ${n.doc_emi!=null?inr(n.doc_emi):"—"}`, (n.doc_emi||0)>(n.said_emi||0)?"bad":""],
-    ["Loan asked", inr(n.requested_amount||0)],
-    ["New EMI @"+(n.interest_rate_pct||22)+"%", inr(n.new_emi||0)+` × ${n.tenure_months}m`],
-    ["Share of income on EMIs", n.foir_pct!=null?n.foir_pct+"%":"—", n.foir_pct>50?"bad":"good"],
-    ["Max safely eligible", inr(n.max_eligible_amount||0), "good"],
-    ["Recommended", inr(m.recommended_amount||0), dec==="APPROVE"?"good":""]];
+  const dec=(m.decision||"REFER").toUpperCase(); const decTxt={APPROVE:"Approve",APPROVE_REDUCED:"Approve · reduced",REFER:"Refer · field check"}[dec]||dec;
+  const riskCol = risk>=67?"var(--flag)":risk>=34?"var(--warn)":"var(--accent)";
+  const incomeGap = n.said_income&&n.doc_income ? (n.said_income-n.doc_income)/n.said_income : 0;   // share of the claimed income the document does not support
+  const figs=[
+    ["Income, said", n.said_income!=null?inr(n.said_income):"—"],
+    ["Income, document", n.doc_income!=null?inr(n.doc_income):"No document", incomeGap>0.13?"bad":"", incomeGap>0.13?`${Math.round(incomeGap*100)}% below what was said`:""],
+    ["Existing EMI", `${inr(n.said_emi||0)} / ${n.doc_emi!=null?inr(n.doc_emi):"—"}`, (n.doc_emi||0)>(n.said_emi||0)?"bad":"", "said / found"],
+    ["Amount asked", inr(n.requested_amount||0)],
+    ["New EMI", inr(n.new_emi||0), "", `${n.tenure_months} months at ${n.interest_rate_pct||22}%`],
+    ["Income on EMIs", n.foir_pct!=null?n.foir_pct+"%":"—", n.foir_pct>50?"bad":"good", "limit 50%"],
+    ["Safely eligible", inr(n.max_eligible_amount||0)],
+    ["Recommended", inr(m.recommended_amount||0), "good"]];
   const mm=(m.mismatches||[]);
+  const list = xs => (xs||[]).length ? xs.map(x=>`<li>${esc(x)}</li>`).join("") : `<li class="meta">None</li>`;
   $("#memo").innerHTML=`
-   <div class="verdict" style="margin-top:14px">
-     <span class="badge ${dec}">${decTxt}</span>
+   <div class="verdict">
+     <span class="stamp ${dec}">${decTxt}</span>
      <div class="headline">${esc(m.headline||"")}</div>
-     <div class="risk"><small>Risk score: <b>${risk}</b>/100</small><div class="bar"><i style="left:calc(${risk}% - 2px)"></i></div></div>
+     <div class="risk"><small>Risk score</small><b>${risk}<span> / 100</span></b>
+       <div class="segs">${Array.from({length:10},(_,i)=>`<i style="${i<Math.round(risk/10)?`background:${riskCol}`:""}"></i>`).join("")}</div></div>
    </div>
-   <div class="tiles">${tiles.map(([k,v,c])=>`<div class="tile ${c||""}"><small>${k}</small><b>${esc(v)}</b></div>`).join("")}</div>
-   <div class="vs"><h3>🔎 Jo Bola vs Jo Dikhaya</h3>
+   <div class="figs">${figs.map(([k,v,c,sub])=>`<div class="fig ${c||""}"><small>${k}</small><b>${esc(v)}</b>${sub?`<span>${esc(sub)}</span>`:""}</div>`).join("")}</div>
+   <h3 class="sub">Said vs shown</h3>
    ${mm.length?`<table><tr><th>Field</th><th>Borrower said</th><th>Document shows</th><th>Severity</th><th>Why it matters</th></tr>
-     ${mm.map(x=>`<tr><td><b>${esc(x.field)}</b></td><td>${esc(x.said)}</td><td>${esc(x.shown)}</td><td><span class="sev ${esc((x.severity||"").toLowerCase())}">${esc(x.severity)}</span></td><td class="meta">${esc(x.note)}</td></tr>`).join("")}</table>`
-     : `<p class="meta">${S.facts?"No material mismatches. What the borrower said matches the document.":"No document checked yet. Add one in Step 2 to run the cross-check."}</p>`}
-   </div>
+     ${mm.map(x=>`<tr><td style="font-weight:500">${esc(x.field)}</td><td>${esc(x.said)}</td><td>${esc(x.shown)}</td><td><span class="sev ${esc((x.severity||"").toLowerCase())}">${esc(x.severity)}</span></td><td class="meta">${esc(x.note)}</td></tr>`).join("")}</table>`
+     : `<p class="meta">${S.facts?"No material differences. What the borrower said matches the document.":"No document checked yet. Add one in step 02 to run the cross-check."}</p>`}
    <div class="cols">
-     <div><h4>Strengths</h4><ul>${(m.strengths||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
-     <div><h4>Concerns</h4><ul>${(m.concerns||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
-     <div><h4>Conditions</h4><ul>${(m.conditions||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+     <div><h4>Strengths</h4><ul>${list(m.strengths)}</ul></div>
+     <div><h4>Concerns</h4><ul>${list(m.concerns)}</ul></div>
+     <div><h4>Conditions</h4><ul>${list(m.conditions)}</ul></div>
    </div>
-   <div class="note"><b>Credit committee note:</b> ${esc(m.summary_en||"")}</div>
-   <div class="voice"><b>Spoken to the borrower (${LANG_NAMES[S.lang]||"their language"}):</b><br>${esc(m.borrower_message||"")}<br>
-     <button class="btn" id="replay">🔊 Play again</button></div>`;
+   <div class="note"><b>Note for the credit committee</b>${esc(m.summary_en||"")}</div>
+   <div class="spoken"><div class="txt"><small>Said to the borrower, in ${LANG_NAMES[S.lang]||"their language"}</small>${esc(m.borrower_message||"")}</div>
+     <button class="play" id="replay" aria-label="Play again">${ICON.play}</button></div>`;
   $("#replay").onclick=()=>play(m.audio);
 }
 
@@ -565,10 +731,11 @@ $("#memoBtn").onclick=makeMemo;
 $("#mApply").onclick=()=>setMode("apply");
 $("#mLoan").onclick=()=>setMode("loan");
 document.querySelectorAll("#quick button").forEach(b=>b.onclick=()=>quickAsk(b.dataset.q));
+setMode(location.hash==="#existing" ? "loan" : "apply", true);   // #existing links straight into the existing-loan view
 renderForm();
 fetch("/api/health").then(r=>r.json()).then(h=>{
-  if(!h.key_loaded && !h.mock) sysMsg("⚠️ No SARVAM_API_KEY found. Add it to the .env file and restart.",true);
-  if(h.mock) sysMsg("🧪 Mock mode: offline backup demo with no API calls.");
+  if(!h.key_loaded && !h.mock) sysMsg("No SARVAM_API_KEY found. Add it to .env and restart the server.",true);
+  if(h.mock) sysMsg("Mock mode: offline demo, no API calls.");
 }).catch(()=>{});
 </script>
 </body>
