@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bol-Ke-Loan</title>
+<style>
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1b2f; --muted:#6b6880; --line:#e7e2d9;
+  --brand:#2d2a6e; --brand2:#4b45c6; --saffron:#f08a24; --saffron-soft:#fff1e2;
+  --green:#14855f; --green-soft:#e3f5ee; --red:#c8372d; --red-soft:#fdeceb; --amber:#b7791f; --amber-soft:#fdf3dc;
+  --shadow:0 1px 2px rgba(20,18,50,.06),0 8px 24px rgba(20,18,50,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",sans-serif}
+header{display:flex;align-items:center;gap:16px;padding:14px 24px;background:var(--brand);color:#fff;flex-wrap:wrap}
+.logo{font-weight:800;font-size:22px;letter-spacing:-.3px}
+.logo span{color:var(--saffron)}
+.tag{opacity:.85;font-size:14px}
+.models{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);white-space:nowrap}
+.chip.on{background:var(--saffron);border-color:var(--saffron);color:#1d1b2f;font-weight:700}
+main{display:grid;grid-template-columns:minmax(340px,430px) 1fr;gap:20px;padding:20px 24px;max-width:1500px;margin:0 auto}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:16px}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.phone{display:flex;flex-direction:column;height:calc(100vh - 110px);min-height:560px;position:sticky;top:20px}
+@media(max-width:900px){.phone{position:static;height:640px}}
+.ph-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),#f7b267);display:grid;place-items:center;font-weight:800;color:#3b1d00}
+.ph-head b{display:block}
+.ph-head small{color:var(--muted)}
+.ph-head select{margin-left:auto}
+select,button,input[type=text]{font:inherit}
+select{padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:#fff}
+.chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#fbfaf7}
+.b{max-width:86%;padding:10px 12px;border-radius:14px;font-size:15.5px}
+.b .en{display:block;margin-top:5px;font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:4px}
+.b.ai{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.b.me{background:var(--brand2);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.b.me .en{color:#dcdaff;border-color:rgba(255,255,255,.25)}
+.b .lang{font-size:11px;font-weight:700;background:var(--saffron-soft);color:#8a4a00;border-radius:6px;padding:1px 6px;margin-left:6px}
+.b.me .lang{background:rgba(255,255,255,.2);color:#fff}
+.sys{align-self:center;font-size:12.5px;color:var(--muted);text-align:center}
+.status{padding:8px 16px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);min-height:36px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#ccc}
+.status.busy .dot{background:var(--saffron);animation:p 1s infinite}
+@keyframes p{50%{opacity:.3}}
+.controls{padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.mic-row{display:flex;gap:10px;align-items:center}
+.mic{flex:1;height:56px;border-radius:14px;border:0;background:var(--saffron);color:#2a1600;font-weight:800;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+.mic.rec{background:var(--red);color:#fff;animation:p 1.2s infinite}
+.mic:disabled{opacity:.5;cursor:not-allowed}
+.btn{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.txt-row{display:flex;gap:8px}
+.txt-row input{flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--line)}
+.right{display:flex;flex-direction:column;gap:20px}
+.card{padding:18px 20px}
+.card h2{margin:0 0 4px;font-size:17px;display:flex;align-items:center;gap:10px}
+.step{width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-size:13px;display:grid;place-items:center;flex:none}
+.card .sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.f{border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:56px;transition:background .6s}
+.f label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+.f div{font-weight:650;margin-top:2px;word-break:break-word}
+.f.empty div{color:#c3bfcf;font-weight:400}
+.f.req label::after{content:" *";color:var(--saffron)}
+.f.flash{background:var(--saffron-soft)}
+.progress{height:6px;background:#efebe4;border-radius:9px;overflow:hidden;margin:4px 0 14px}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--saffron),var(--brand2));transition:width .5s}
+.doc-row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.drop{width:220px;min-height:150px;border:2px dashed var(--line);border-radius:12px;display:grid;place-items:center;text-align:center;color:var(--muted);cursor:pointer;overflow:hidden;font-size:13px;padding:8px}
+.drop img{max-width:100%;max-height:260px;display:block}
+.doc-actions{display:flex;flex-direction:column;gap:8px;min-width:200px}
+.facts{flex:1;min-width:260px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600}
+details{margin-top:8px;font-size:13px;color:var(--muted)}
+pre{white-space:pre-wrap;background:#faf8f4;border:1px solid var(--line);border-radius:8px;padding:10px;max-height:220px;overflow:auto;font-size:12px}
+.verdict{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.badge{font-weight:800;padding:8px 14px;border-radius:10px;font-size:15px}
+.badge.APPROVE{background:var(--green-soft);color:var(--green)}
+.badge.APPROVE_REDUCED{background:var(--amber-soft);color:var(--amber)}
+.badge.REFER{background:var(--red-soft);color:var(--red)}
+.headline{font-size:16px;font-weight:650;flex:1;min-width:240px}
+.risk{width:180px}
+.risk small{color:var(--muted);font-size:12px}
+.risk .bar{height:10px;border-radius:9px;background:linear-gradient(90deg,#3bb07c,#f0b429,#e0523f);position:relative;margin-top:4px}
+.risk .bar i{position:absolute;top:-4px;width:4px;height:18px;background:var(--ink);border-radius:2px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.tile{background:#faf8f4;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tile small{display:block;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.tile b{font-size:18px}
+.tile.bad b{color:var(--red)} .tile.good b{color:var(--green)}
+.vs h3{margin:6px 0 8px;font-size:15px}
+.sev{font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;text-transform:uppercase}
+.sev.high{background:var(--red-soft);color:var(--red)} .sev.medium{background:var(--amber-soft);color:var(--amber)} .sev.low{background:#eef0f7;color:#555}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:14px}
+.cols h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+.cols ul{margin:0;padding-left:18px}
+.note{background:#faf8f4;border-left:4px solid var(--brand2);padding:10px 14px;border-radius:6px;margin-top:14px}
+.voice{background:var(--saffron-soft);border-left:4px solid var(--saffron);padding:12px 14px;border-radius:6px;margin-top:12px;font-size:16px}
+.voice .btn{margin-top:8px}
+.err{background:var(--red-soft);color:var(--red);padding:8px 12px;border-radius:8px;font-size:13px;margin-top:8px}
+.hidden{display:none!important}
+.meta{font-size:12px;color:var(--muted)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px}
+@keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Bol-Ke-<span>Loan</span></div>
+  <div class="tag">Bolo apni bhasha mein. Jo bola vs jo dikhaya — AI underwriting for Bharat.</div>
+  <div class="models">
+    <span class="chip" id="c-stt">Saaras · speech</span>
+    <span class="chip" id="c-llm">Sarvam-105B · brain</span>
+    <span class="chip" id="c-tts">Bulbul v3 · voice</span>
+    <span class="chip" id="c-vis">Sarvam Vision · docs</span>
+  </div>
+</header>
+
+<main>
+  <!-- Borrower side -->
+  <section class="panel phone">
+    <div class="ph-head">
+      <div class="avatar">स</div>
+      <div><b>Sakhi · AI loan officer</b><small id="langLbl">Language: auto-detect</small></div>
+      <select id="lang" title="Borrower language">
+        <option value="auto">Auto-detect</option>
+        <option value="hi-IN">हिन्दी</option><option value="mr-IN">मराठी</option><option value="ta-IN">தமிழ்</option>
+        <option value="te-IN">తెలుగు</option><option value="kn-IN">ಕನ್ನಡ</option><option value="bn-IN">বাংলা</option>
+        <option value="gu-IN">ગુજરાતી</option><option value="ml-IN">മലയാളം</option><option value="pa-IN">ਪੰਜਾਬੀ</option>
+        <option value="od-IN">ଓଡ଼ିଆ</option><option value="en-IN">English</option>
+      </select>
+    </div>
+    <div class="chat" id="chat">
+      <div class="sys">A shopkeeper or farmer applies for a loan just by talking, in any Indian language.<br>Press <b>Start call</b>, or run the <b>Demo borrower</b>.</div>
+    </div>
+    <div class="status" id="status"><span class="dot"></span><span id="statusTxt">Ready</span></div>
+    <div class="controls">
+      <div class="mic-row">
+        <button class="mic" id="mic" disabled>🎙️ <span id="micTxt">Tap to speak</span></button>
+      </div>
+      <div class="txt-row">
+        <input type="text" id="txt" placeholder="…or type (Hindi, Hinglish, Tamil, anything)" disabled>
+        <button class="btn" id="send" disabled>Send</button>
+      </div>
+      <div class="mic-row">
+        <button class="btn primary" id="start" style="flex:1">📞 Start call</button>
+        <button class="btn" id="demo" style="flex:1">▶ Demo borrower</button>
+        <label class="meta" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="voiceOn" checked>voice</label>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lender side -->
+  <section class="right">
+    <div class="panel card">
+      <h2><span class="step">1</span>Live loan application <span class="meta" id="formMeta" style="margin-left:auto"></span></h2>
+      <p class="sub">Filled automatically from the conversation and saved in English for the lender. Fields marked * are required.</p>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="grid" id="form"></div>
+    </div>
+
+    <div class="panel card">
+      <h2><span class="step">2</span>Show your document — Sarvam Vision</h2>
+      <p class="sub">A photo of a bank passbook, bank statement or salary slip. Sarvam Vision reads it, then we compare it with what the borrower said.</p>
+      <div class="doc-row">
+        <label class="drop" id="drop"><input type="file" id="file" accept="image/*,application/pdf" hidden><span id="dropTxt">📷 Click to upload a photo<br>(passbook / statement / salary slip)</span></label>
+        <div class="doc-actions">
+          <button class="btn" id="sample">Use sample passbook</button>
+          <select id="docLang"><option value="en-IN">Document language: English</option><option value="hi-IN">Hindi</option><option value="mr-IN">Marathi</option><option value="ta-IN">Tamil</option><option value="te-IN">Telugu</option><option value="kn-IN">Kannada</option><option value="bn-IN">Bengali</option><option value="gu-IN">Gujarati</option></select>
+          <button class="btn primary" id="readDoc" disabled>🔍 Read with Sarvam Vision</button>
+          <span class="meta" id="docMeta"></span>
+        </div>
+        <div class="facts" id="facts"></div>
+      </div>
+    </div>
+
+    <div class="panel card">
+      <h2><span class="step">3</span>Underwriting memo — "Jo Bola vs Jo Dikhaya"</h2>
+      <p class="sub">An explainable credit decision for the lender, plus a spoken reply to the borrower in their own language.</p>
+      <button class="btn primary" id="memoBtn" disabled>⚖️ Generate underwriting memo</button>
+      <span class="meta" id="memoMeta"></span>
+      <div id="memo"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const FIELDS = [
+  ["full_name","Name",1],["age","Age"],["location","Location"],["occupation","Occupation",1],["years_in_business","Years in business"],
+  ["monthly_income","Monthly income ₹",1],["monthly_expenses","Monthly expenses ₹",1],["dependents","Dependents"],
+  ["existing_loans","Existing loans"],["existing_emi","Existing EMI ₹",1],["loan_amount","Loan asked ₹",1],["loan_purpose","Purpose",1],
+  ["tenure_months","Tenure (months)"],["collateral","Collateral"]];
+const MONEY = new Set(["monthly_income","monthly_expenses","existing_emi","loan_amount"]);
+const LANG_NAMES = {"hi-IN":"Hindi","mr-IN":"Marathi","ta-IN":"Tamil","te-IN":"Telugu","kn-IN":"Kannada","bn-IN":"Bengali","gu-IN":"Gujarati","ml-IN":"Malayalam","pa-IN":"Punjabi","od-IN":"Odia","en-IN":"English"};
+const S = {lang:null, history:[], form:{}, facts:null, started:false, busy:false, done:false, docFile:null, rec:null, audio:null};
+
+// ---------- helpers
+const inr = v => { const n = Number(String(v).replace(/[^\d.]/g,"")); return isFinite(n)&&String(v).trim()!=="" ? "₹"+Math.round(n).toLocaleString("en-IN") : (v??"—"); };
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function status(t, busy=false, chip=null){ $("#statusTxt").textContent=t; $("#status").classList.toggle("busy",busy);
+  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("on")); if(chip) $("#c-"+chip).classList.add("on"); }
+async function api(path, body){
+  const r = await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const j = await r.json().catch(()=>({error:"Bad response "+r.status}));
+  if(!r.ok || j.error) throw new Error(j.error||("HTTP "+r.status));
+  return j;
+}
+function bubble(role, text, en, lang){
+  const d=document.createElement("div"); d.className="b "+(role==="assistant"?"ai":"me");
+  d.innerHTML = esc(text) + (lang?`<span class="lang">${LANG_NAMES[lang]||lang}</span>`:"") + (en?`<span class="en">${esc(en)}</span>`:"");
+  $("#chat").appendChild(d); $("#chat").scrollTop=1e9; return d;
+}
+function sysMsg(t, err=false){ const d=document.createElement("div"); d.className="sys"; if(err) d.style.color="var(--red)"; d.innerHTML=t; $("#chat").appendChild(d); $("#chat").scrollTop=1e9; }
+function setLang(l){ if(!l) return; S.lang=l; $("#langLbl").textContent="Language: "+(LANG_NAMES[l]||l)+($("#lang").value==="auto"?" (auto-detected)":""); }
+function stopAudio(){ if(S.audio){ S.audio.pause(); S.audio=null; } }
+async function play(list){
+  if(!$("#voiceOn").checked || !list || !list.length){ status("Ready"); return; }
+  stopAudio(); status("Speaking · Bulbul v3", true, "tts");
+  for(const b64 of list){
+    await new Promise(res=>{ const a=new Audio("data:audio/wav;base64,"+b64); S.audio=a; a.onended=res; a.onerror=res; a.play().catch(res); });
+    if(!S.audio) break;
+  }
+  status("Ready");
+}
+
+// ---------- form
+function renderForm(changed=[]){
+  const g=$("#form"); g.innerHTML="";
+  let have=0, req=0;
+  for(const [k,label,r] of FIELDS){
+    const v=S.form[k]; const has = v!==undefined && v!==null && v!=="";
+    if(r){ req++; if(has) have++; }
+    const d=document.createElement("div"); d.className="f"+(has?"":" empty")+(r?" req":"")+(changed.includes(k)?" flash":"");
+    d.innerHTML=`<label>${label}</label><div>${has?esc(MONEY.has(k)?inr(v):v):"waiting…"}</div>`;
+    g.appendChild(d);
+  }
+  $("#prog").style.width=(have/req*100)+"%";
+  $("#formMeta").textContent=`${have}/${req} required`;
+  if(changed.length) setTimeout(()=>document.querySelectorAll(".f.flash").forEach(e=>e.classList.remove("flash")),1400);
+  $("#memoBtn").disabled = have<3;
+}
+
+// ---------- conversation
+async function startCall(){
+  if(S.started) return; S.started=true;
+  $("#start").disabled=true; $("#mic").disabled=false; $("#txt").disabled=false; $("#send").disabled=false;
+  const sel=$("#lang").value; const l = sel==="auto" ? "hi-IN" : sel;
+  status("Connecting…", true, "tts");
+  try{
+    const g = await api("/api/greet",{lang:l});
+    setLang(sel==="auto"? null : g.lang); if(sel!=="auto") setLang(g.lang);
+    bubble("assistant", g.reply, sel==="auto"?"Speak in any language — Sakhi will switch to it.":g.reply_en);
+    S.history.push({role:"assistant",content:g.reply});
+    await play(g.audio);
+  }catch(e){ sysMsg("⚠️ "+esc(e.message),true); status("Error"); }
+}
+
+async function sendText(text, mine=true, detected=null){
+  text=(text||"").trim(); if(!text||S.busy) return;
+  S.busy=true; stopAudio();
+  const ub = mine ? bubble("user", text, null, detected) : null;
+  S.history.push({role:"user",content:text});
+  status("Thinking · Sarvam-105B", true, "llm");
+  try{
+    const lang = $("#lang").value!=="auto" ? $("#lang").value : (detected || S.lang || "hi-IN");
+    const r = await api("/api/turn",{text, history:S.history.slice(0,-1), form:S.form, lang});
+    if(ub && r.user_en && r.user_en!=="(mock)") ub.insertAdjacentHTML("beforeend",`<span class="en">${esc(r.user_en)}</span>`);
+    if($("#lang").value==="auto") setLang(r.lang);
+    const changed = Object.keys(r.form||{});
+    S.form = r.form_full || Object.assign(S.form, r.form||{});
+    renderForm(changed);
+    bubble("assistant", r.reply, r.reply_en && r.reply_en!=="(mock)" ? r.reply_en : null);
+    S.history.push({role:"assistant",content:r.reply});
+    $("#memoMeta").textContent="";
+    if(r.done && !S.done){ S.done=true; sysMsg("✅ Interview complete. Next: show a passbook or salary slip (Step 2)."); }
+    S.busy=false;
+    await play(r.audio);
+  }catch(e){ S.busy=false; S.history.pop(); sysMsg("⚠️ "+esc(e.message),true); status("Error — try again"); }
+}
+
+// ---------- mic -> 16k wav -> Saaras
+async function toWav16k(blob){
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const dec=await ctx.decodeAudioData(await blob.arrayBuffer()); ctx.close();
+  const len=Math.max(1,Math.ceil(dec.duration*16000));
+  const off=new OfflineAudioContext(1,len,16000); const src=off.createBufferSource(); src.buffer=dec; src.connect(off.destination); src.start();
+  const pcm=(await off.startRendering()).getChannelData(0);
+  const buf=new ArrayBuffer(44+pcm.length*2), v=new DataView(buf); let o=0;
+  const w=s=>{for(const c of s) v.setUint8(o++,c.charCodeAt(0))}, u32=x=>{v.setUint32(o,x,true);o+=4}, u16=x=>{v.setUint16(o,x,true);o+=2};
+  w("RIFF");u32(36+pcm.length*2);w("WAVE");w("fmt ");u32(16);u16(1);u16(1);u32(16000);u32(32000);u16(2);u16(16);w("data");u32(pcm.length*2);
+  for(let i=0;i<pcm.length;i++){const s=Math.max(-1,Math.min(1,pcm[i]));v.setInt16(o,s<0?s*0x8000:s*0x7fff,true);o+=2;}
+  let bin=""; const bytes=new Uint8Array(buf); for(let i=0;i<bytes.length;i+=0x8000) bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));
+  return btoa(bin);
+}
+let recTimer=null;
+async function toggleMic(){
+  if(S.rec){ S.rec.stop(); return; }
+  if(S.busy) return;
+  stopAudio();
+  let stream;
+  try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ sysMsg("⚠️ Microphone blocked. Allow mic access, or type instead.",true); return; }
+  const chunks=[]; const rec=new MediaRecorder(stream); S.rec=rec;
+  rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+  rec.onstop=async()=>{
+    clearTimeout(recTimer); stream.getTracks().forEach(t=>t.stop()); S.rec=null;
+    $("#mic").classList.remove("rec"); $("#micTxt").textContent="Tap to speak";
+    status("Transcribing · Saaras", true, "stt");
+    try{
+      const wav=await toWav16k(new Blob(chunks,{type:rec.mimeType}));
+      const sel=$("#lang").value;
+      const r=await api("/api/stt",{audio_b64:wav, lang: sel==="auto"?null:sel});
+      if(!r.transcript.trim()){ status("Didn't catch that — try again"); return; }
+      if(sel==="auto") setLang(r.language_code);
+      await sendText(r.transcript, true, r.language_code);
+    }catch(e){ sysMsg("⚠️ "+esc(e.message),true); status("Error"); }
+  };
+  rec.start(); $("#mic").classList.add("rec"); $("#micTxt").textContent="Listening… tap to stop"; status("Listening…", true, "stt");
+  recTimer=setTimeout(()=>S.rec&&S.rec.stop(), 25000); // REST STT limit ~30s
+}
+
+// ---------- demo borrower (Hinglish, code-mixed)
+const DEMO = [
+  "नमस्ते, मेरा नाम रमेश पाटिल है, मैं नाशिक के पास सिन्नर गाँव से हूँ।",
+  "मेरी किराना की दुकान है, आठ साल से चला रहा हूँ।",
+  "हर महीने लगभग चालीस हज़ार की कमाई हो जाती है।",
+  "घर और दुकान का खर्चा मिलाकर अठारह हज़ार, घर में चार लोग हैं।",
+  "नहीं नहीं, कोई loan नहीं है, कोई EMI नहीं चल रही।",
+  "मुझे दो लाख का loan चाहिए, दुकान के लिए नया fridge और stock लेना है, दो साल में चुका दूँगा।",
+  "कोई गिरवी नहीं है, बस दुकान है। उम्र मेरी बयालीस साल है।",
+  "हाँ जी, सब बता दिया।"
+];
+async function runDemo(){
+  $("#demo").disabled=true;
+  if(!S.started) await startCall();
+  for(const line of DEMO){
+    if(S.done) break;
+    await new Promise(r=>setTimeout(r,500));
+    await sendText(line, true, "hi-IN");
+  }
+  if(!S.docFile) await useSample();
+  $("#demo").disabled=false;
+}
+
+// ---------- document
+function setDoc(file){
+  S.docFile=file; $("#readDoc").disabled=false;
+  const url=URL.createObjectURL(file);
+  $("#dropTxt").innerHTML = file.type.startsWith("image/") ? `<img src="${url}" alt="document">` : "📄 "+esc(file.name);
+}
+async function useSample(){
+  const b=await (await fetch("/sample_passbook.png")).blob();
+  setDoc(new File([b],"sample_passbook.png",{type:"image/png"}));
+}
+const fileToB64 = f => new Promise((res,rej)=>{const r=new FileReader(); r.onload=()=>res(r.result.split(",")[1]); r.onerror=rej; r.readAsDataURL(f);});
+async function readDoc(){
+  if(!S.docFile) return;
+  $("#readDoc").disabled=true; $("#docMeta").innerHTML='<span class="spinner"></span> Sarvam Vision is reading the document… (about 10–40s)';
+  status("Reading document · Sarvam Vision", true, "vis");
+  try{
+    const r=await api("/api/doc",{image_b64:await fileToB64(S.docFile), filename:S.docFile.name, mime:S.docFile.type||"image/png", doc_lang:$("#docLang").value});
+    S.facts=r.facts; renderFacts(r);
+    $("#docMeta").textContent=`Read in ${(r.ms/1000).toFixed(1)}s`;
+    $("#memoBtn").disabled=false;
+  }catch(e){ $("#docMeta").innerHTML=`<div class="err">${esc(e.message)}</div>`; }
+  $("#readDoc").disabled=false; status("Ready");
+}
+function renderFacts(r){
+  const f=r.facts||{}; const rows=[
+    ["Document",f.doc_type],["Account holder",f.account_holder_name],["Bank / employer",f.bank_or_employer],["Period",f.period],
+    ["Avg monthly credits",f.avg_monthly_credits!=null?inr(f.avg_monthly_credits):null],["Salary / regular income",f.salary_or_regular_income!=null?inr(f.salary_or_regular_income):null],
+    ["EMI / loan debits per month",f.emi_or_loan_debits_monthly!=null?inr(f.emi_or_loan_debits_monthly):null],["EMI details",f.emi_details],
+    ["Closing balance",f.closing_balance!=null?inr(f.closing_balance):null],["Bounces / penalties",f.bounced_or_penalty_charges],["Observations",f.other_observations]
+  ].filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=="");
+  $("#facts").innerHTML=`<table><tr><th colspan=2>What the document shows</th></tr>${rows.map(([k,v])=>`<tr><td class="meta">${k}</td><td><b>${esc(v)}</b></td></tr>`).join("")}</table>
+  <details><summary>Raw text read by Sarvam Vision</summary><pre>${esc(r.markdown)}</pre></details>`;
+}
+
+// ---------- memo
+async function makeMemo(){
+  $("#memoBtn").disabled=true; $("#memoMeta").innerHTML=' <span class="spinner"></span> Underwriting with Sarvam-105B…';
+  status("Underwriting · Sarvam-105B", true, "llm");
+  try{
+    const m=await api("/api/memo",{form:S.form, facts:S.facts, lang:S.lang||"hi-IN"});
+    renderMemo(m); $("#memoMeta").textContent=` done in ${(m.ms/1000).toFixed(1)}s`;
+    sysMsg("📋 Decision sent to the borrower in "+(LANG_NAMES[S.lang]||"their language"));
+    bubble("assistant", m.borrower_message);
+    await play(m.audio);
+  }catch(e){ $("#memoMeta").innerHTML=`<div class="err">${esc(e.message)}</div>`; status("Error"); }
+  $("#memoBtn").disabled=false;
+}
+function renderMemo(m){
+  const n=m.numbers||{}; const risk=Math.max(0,Math.min(100,Number(m.risk_score)||0));
+  const dec=(m.decision||"REFER").toUpperCase(); const decTxt={APPROVE:"✅ APPROVE",APPROVE_REDUCED:"🟡 APPROVE — REDUCED AMOUNT",REFER:"🔴 REFER — FIELD CHECK"}[dec]||dec;
+  const incomeGap = n.said_income&&n.doc_income ? (n.said_income-n.doc_income)/n.doc_income : 0;
+  const tiles=[
+    ["Income — said", n.said_income!=null?inr(n.said_income):"—"],
+    ["Income — document", n.doc_income!=null?inr(n.doc_income):"no document", incomeGap>0.15?"bad":""],
+    ["Existing EMI (said / found)", `${inr(n.said_emi||0)} / ${n.doc_emi!=null?inr(n.doc_emi):"—"}`, (n.doc_emi||0)>(n.said_emi||0)?"bad":""],
+    ["Loan asked", inr(n.requested_amount||0)],
+    ["New EMI @"+(n.interest_rate_pct||22)+"%", inr(n.new_emi||0)+` × ${n.tenure_months}m`],
+    ["Share of income on EMIs", n.foir_pct!=null?n.foir_pct+"%":"—", n.foir_pct>50?"bad":"good"],
+    ["Max safely eligible", inr(n.max_eligible_amount||0), "good"],
+    ["Recommended", inr(m.recommended_amount||0), dec==="APPROVE"?"good":""]];
+  const mm=(m.mismatches||[]);
+  $("#memo").innerHTML=`
+   <div class="verdict" style="margin-top:14px">
+     <span class="badge ${dec}">${decTxt}</span>
+     <div class="headline">${esc(m.headline||"")}</div>
+     <div class="risk"><small>Risk score: <b>${risk}</b>/100</small><div class="bar"><i style="left:calc(${risk}% - 2px)"></i></div></div>
+   </div>
+   <div class="tiles">${tiles.map(([k,v,c])=>`<div class="tile ${c||""}"><small>${k}</small><b>${esc(v)}</b></div>`).join("")}</div>
+   <div class="vs"><h3>🔎 Jo Bola vs Jo Dikhaya</h3>
+   ${mm.length?`<table><tr><th>Field</th><th>Borrower said</th><th>Document shows</th><th>Severity</th><th>Why it matters</th></tr>
+     ${mm.map(x=>`<tr><td><b>${esc(x.field)}</b></td><td>${esc(x.said)}</td><td>${esc(x.shown)}</td><td><span class="sev ${esc((x.severity||"").toLowerCase())}">${esc(x.severity)}</span></td><td class="meta">${esc(x.note)}</td></tr>`).join("")}</table>`
+     : `<p class="meta">${S.facts?"No material mismatches. What the borrower said matches the document.":"No document checked yet. Add one in Step 2 to run the cross-check."}</p>`}
+   </div>
+   <div class="cols">
+     <div><h4>Strengths</h4><ul>${(m.strengths||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+     <div><h4>Concerns</h4><ul>${(m.concerns||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+     <div><h4>Conditions</h4><ul>${(m.conditions||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+   </div>
+   <div class="note"><b>Credit committee note:</b> ${esc(m.summary_en||"")}</div>
+   <div class="voice"><b>Spoken to the borrower (${LANG_NAMES[S.lang]||"their language"}):</b><br>${esc(m.borrower_message||"")}<br>
+     <button class="btn" id="replay">🔊 Play again</button></div>`;
+  $("#replay").onclick=()=>play(m.audio);
+}
+
+// ---------- wire up
+$("#start").onclick=startCall;
+$("#mic").onclick=toggleMic;
+$("#send").onclick=()=>{ const t=$("#txt").value; $("#txt").value=""; sendText(t); };
+$("#txt").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#send").click(); });
+$("#demo").onclick=runDemo;
+$("#lang").onchange=()=>{ if($("#lang").value!=="auto") setLang($("#lang").value); else $("#langLbl").textContent="Language: auto-detect"; };
+$("#file").onchange=e=>e.target.files[0]&&setDoc(e.target.files[0]);
+$("#sample").onclick=useSample;
+$("#readDoc").onclick=readDoc;
+$("#memoBtn").onclick=makeMemo;
+renderForm();
+fetch("/api/health").then(r=>r.json()).then(h=>{
+  if(!h.key_loaded && !h.mock) sysMsg("⚠️ No SARVAM_API_KEY found. Add it to the .env file and restart.",true);
+  if(h.mock) sysMsg("🧪 Mock mode: offline backup demo with no API calls.");
+}).catch(()=>{});
+</script>
+</body>
+</html>
