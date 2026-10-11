@@ -20,15 +20,29 @@ Bol-Ke-Loan fixes both ends of the problem:
 
 Affordability math (EMI, FOIR, maximum eligible amount) is computed in plain code, not by the LLM, so the numbers are deterministic and auditable.
 
-## Run it (Mac)
-```bash
-cd ~/Documents/sarvam
-./start.sh            # installs the sarvamai SDK (for Vision) and starts the app
-# or:  pip3 install -r requirements.txt && python3 server.py
-```
-Open **http://localhost:8000** in Chrome. The key is read from `.env` (`SARVAM_API_KEY=...`), which is git-ignored and never hard-coded.
+## Run it
+You need **Python 3.9+** and a **Sarvam API key** from https://dashboard.sarvam.ai. The only dependency is the `sarvamai` SDK; everything else is the Python standard library.
 
-**Backup demo:** `SARVAM_MOCK=1 python3 server.py` runs the whole flow offline with canned responses, for when the Wi-Fi dies on stage.
+```bash
+git clone https://github.com/prajyotdev530/sarvam-loan-agent.git
+cd sarvam-loan-agent
+
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+cp .env.example .env               # Windows: copy .env.example .env
+# open .env and set SARVAM_API_KEY=<your key>
+
+python server.py
+```
+Open **http://localhost:8000** in Chrome. Chrome allows the microphone on `localhost`.
+
+**One command on macOS / Linux:** `./start.sh` creates the virtualenv, installs the requirements, creates `.env` from the example if it's missing, starts the server and opens the browser.
+
+The key is read only from `.env`, which is git-ignored, and is never hard-coded. Optional settings (port, models, voice) are listed in `.env.example`.
+
+**No key? Backup demo:** `SARVAM_MOCK=1 python server.py` runs the whole flow offline with canned responses. It needs no key or network, which is useful when the Wi-Fi dies on stage.
 
 ## 90-second demo script
 1. Press **Start call**. Sakhi greets the borrower in Hindi.

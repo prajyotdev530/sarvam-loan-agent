@@ -7,9 +7,9 @@ Voice-first loan interview in any Indian language + document cross-check, built 
   Bulbul v3 (voice of the loan officer)          ->  Sarvam Vision (reads passbook / salary slip)
   Running-loan mode: ask about next installment, total interest, remaining EMIs (schedule computed in code)
 
-Run:   pip3 install -r requirements.txt   (only needed for Sarvam Vision)
+Run:   pip install -r requirements.txt
        python3 server.py                  -> open http://localhost:8000
-Key:   put SARVAM_API_KEY=... in .env (never commit it)
+Key:   cp .env.example .env, then set SARVAM_API_KEY (never commit .env)
 """
 import base64
 import calendar
@@ -199,10 +199,10 @@ def vision_read(img_bytes, fname, mime, lang):
     try:
         from sarvamai import SarvamAI
     except ImportError:
-        raise SarvamError("Sarvam Vision needs the SDK: run  pip3 install -U sarvamai")
+        raise SarvamError("Sarvam Vision needs the SDK: run  pip install -r requirements.txt")
     client = SarvamAI(api_subscription_key=API_KEY)
     if not hasattr(client, "doc_ai"):
-        raise SarvamError("Your sarvamai SDK is old: run  pip3 install -U sarvamai")
+        raise SarvamError("Your sarvamai SDK is too old: run  pip install -U -r requirements.txt")
     job = client.doc_ai.digitise(file=[(fname, io.BytesIO(img_bytes), mime)], language=lang, output_format="md")
     terminal = {"completed", "partially_completed", "failed", "rejected"}
     deadline = time.time() + 180

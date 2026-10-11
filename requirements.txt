@@ -1,1 +1,3 @@
-sarvamai>=0.1.20
+# Everything else the app uses is in the Python standard library (Python 3.9+).
+# sarvamai is the Sarvam AI SDK, used for Sarvam Vision (Document AI). 0.1.29 is the first release with doc_ai.
+sarvamai>=0.1.29,<0.2
