@@ -23,7 +23,7 @@ header{display:flex;align-items:center;gap:16px;padding:14px 24px;background:var
 main{display:grid;grid-template-columns:minmax(340px,430px) 1fr;gap:20px;padding:20px 24px;max-width:1500px;margin:0 auto}
 @media(max-width:900px){main{grid-template-columns:1fr;padding:16px}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
-.phone{display:flex;flex-direction:column;height:calc(100vh - 110px);min-height:560px;position:sticky;top:20px}
+.phone{display:flex;flex-direction:column;height:calc(100vh - 110px);min-height:660px;position:sticky;top:20px}
 @media(max-width:900px){.phone{position:static;height:640px}}
 .ph-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
 .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),#f7b267);display:grid;place-items:center;font-weight:800;color:#3b1d00}
@@ -109,6 +109,22 @@ pre{white-space:pre-wrap;background:#faf8f4;border:1px solid var(--line);border-
 .meta{font-size:12px;color:var(--muted)}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px}
 @keyframes s{to{transform:rotate(360deg)}}
+.modes{display:flex;gap:6px;padding:8px 16px;border-bottom:1px solid var(--line)}
+.modes button{flex:1;padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:650}
+.modes button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.stack{display:flex;flex-direction:column;gap:20px}
+.quick{display:flex;gap:6px}
+.quick button{flex:1;white-space:nowrap;font:inherit;font-size:12.5px;padding:5px 6px;border-radius:999px;border:1px solid #f5c99a;background:var(--saffron-soft);color:#6b3a00;cursor:pointer}
+.tile span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.tile{transition:background .6s,border-color .6s}
+.tile.flash{background:var(--saffron-soft);border-color:var(--saffron)}
+.loan-head{display:flex;gap:8px 20px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:0 0 10px}
+.loan-head b{color:var(--ink)}
+.sched{max-height:330px;overflow:auto;position:relative;border:1px solid var(--line);border-radius:10px}
+.sched th{position:sticky;top:0;background:#fff}
+.sched td,.sched th{text-align:right} .sched td:first-child,.sched th:first-child,.sched td:nth-child(2),.sched th:nth-child(2){text-align:left}
+tr.paid td{color:var(--muted)}
+tr.next td{background:var(--saffron-soft);font-weight:700}
 </style>
 </head>
 <body>
@@ -137,13 +153,25 @@ pre{white-space:pre-wrap;background:#faf8f4;border:1px solid var(--line);border-
         <option value="od-IN">ଓଡ଼ିଆ</option><option value="en-IN">English</option>
       </select>
     </div>
+    <div class="modes">
+      <button id="mApply" class="on">📝 Apply for a loan</button>
+      <button id="mLoan">💳 My running loan</button>
+    </div>
     <div class="chat" id="chat">
       <div class="sys">A shopkeeper or farmer applies for a loan just by talking, in any Indian language.<br>Press <b>Start call</b>, or run the <b>Demo borrower</b>.</div>
+    </div>
+    <div class="chat hidden" id="chatLoan">
+      <div class="sys">Already have a loan? Ask about the next installment, total interest or remaining EMIs, in any Indian language.<br>Press <b>Start call</b>, tap a question below, or run the <b>Demo questions</b>.</div>
     </div>
     <div class="status" id="status"><span class="dot"></span><span id="statusTxt">Ready</span></div>
     <div class="controls">
       <div class="mic-row">
         <button class="mic" id="mic" disabled>🎙️ <span id="micTxt">Tap to speak</span></button>
+      </div>
+      <div class="quick hidden" id="quick">
+        <button data-q="next">📅 Next EMI</button>
+        <button data-q="interest">💰 Total interest</button>
+        <button data-q="remaining">🔢 EMIs left</button>
       </div>
       <div class="txt-row">
         <input type="text" id="txt" placeholder="…or type (Hindi, Hinglish, Tamil, anything)" disabled>
@@ -159,6 +187,7 @@ pre{white-space:pre-wrap;background:#faf8f4;border:1px solid var(--line);border-
 
   <!-- Lender side -->
   <section class="right">
+   <div class="stack" id="applyView">
     <div class="panel card">
       <h2><span class="step">1</span>Live loan application <span class="meta" id="formMeta" style="margin-left:auto"></span></h2>
       <p class="sub">Filled automatically from the conversation and saved in English for the lender. Fields marked * are required.</p>
@@ -188,6 +217,15 @@ pre{white-space:pre-wrap;background:#faf8f4;border:1px solid var(--line);border-
       <span class="meta" id="memoMeta"></span>
       <div id="memo"></div>
     </div>
+   </div>
+
+   <div class="stack hidden" id="loanView">
+    <div class="panel card">
+      <h2><span class="step">₹</span>Running loan account <span class="meta" id="loanMeta" style="margin-left:auto"></span></h2>
+      <p class="sub">Sample loan for now. The repayment schedule is computed in code; Sakhi only reads these numbers back to the borrower in their language.</p>
+      <div id="loanCard"><span class="meta"><span class="spinner"></span> Loading loan…</span></div>
+    </div>
+   </div>
   </section>
 </main>
 
@@ -200,7 +238,10 @@ const FIELDS = [
   ["tenure_months","Tenure (months)"],["collateral","Collateral"]];
 const MONEY = new Set(["monthly_income","monthly_expenses","existing_emi","loan_amount"]);
 const LANG_NAMES = {"hi-IN":"Hindi","mr-IN":"Marathi","ta-IN":"Tamil","te-IN":"Telugu","kn-IN":"Kannada","bn-IN":"Bengali","gu-IN":"Gujarati","ml-IN":"Malayalam","pa-IN":"Punjabi","od-IN":"Odia","en-IN":"English"};
-const S = {lang:null, history:[], form:{}, facts:null, started:false, busy:false, done:false, docFile:null, rec:null, audio:null};
+const S = {lang:null, history:[], form:{}, facts:null, started:false, busy:false, done:false, docFile:null, rec:null, audio:null,
+           mode:"apply", loanStarted:false, loanHistory:[], loan:null, demo:false};
+const isLoan = () => S.mode==="loan";
+const chatEl = () => isLoan() ? $("#chatLoan") : $("#chat");
 
 // ---------- helpers
 const inr = v => { const n = Number(String(v).replace(/[^\d.]/g,"")); return isFinite(n)&&String(v).trim()!=="" ? "₹"+Math.round(n).toLocaleString("en-IN") : (v??"—"); };
@@ -216,9 +257,9 @@ async function api(path, body){
 function bubble(role, text, en, lang){
   const d=document.createElement("div"); d.className="b "+(role==="assistant"?"ai":"me");
   d.innerHTML = esc(text) + (lang?`<span class="lang">${LANG_NAMES[lang]||lang}</span>`:"") + (en?`<span class="en">${esc(en)}</span>`:"");
-  $("#chat").appendChild(d); $("#chat").scrollTop=1e9; return d;
+  const c=chatEl(); c.appendChild(d); c.scrollTop=1e9; return d;
 }
-function sysMsg(t, err=false){ const d=document.createElement("div"); d.className="sys"; if(err) d.style.color="var(--red)"; d.innerHTML=t; $("#chat").appendChild(d); $("#chat").scrollTop=1e9; }
+function sysMsg(t, err=false){ const d=document.createElement("div"); d.className="sys"; if(err) d.style.color="var(--red)"; d.innerHTML=t; const c=chatEl(); c.appendChild(d); c.scrollTop=1e9; }
 function setLang(l){ if(!l) return; S.lang=l; $("#langLbl").textContent="Language: "+(LANG_NAMES[l]||l)+($("#lang").value==="auto"?" (auto-detected)":""); }
 function stopAudio(){ if(S.audio){ S.audio.pause(); S.audio=null; } }
 async function play(list){
@@ -249,16 +290,24 @@ function renderForm(changed=[]){
 }
 
 // ---------- conversation
+function syncControls(){
+  const on = isLoan() ? S.loanStarted : S.started;
+  $("#start").disabled=on; $("#mic").disabled=!on; $("#txt").disabled=!on; $("#send").disabled=!on;
+  $("#demo").textContent = isLoan() ? "▶ Demo Qs" : "▶ Demo borrower";
+}
+
 async function startCall(){
-  if(S.started) return; S.started=true;
-  $("#start").disabled=true; $("#mic").disabled=false; $("#txt").disabled=false; $("#send").disabled=false;
+  const loan=isLoan();
+  if(loan ? S.loanStarted : S.started) return;
+  if(loan) S.loanStarted=true; else S.started=true;
+  syncControls();
   const sel=$("#lang").value; const l = sel==="auto" ? "hi-IN" : sel;
   status("Connecting…", true, "tts");
   try{
-    const g = await api("/api/greet",{lang:l});
+    const g = await api("/api/greet",{lang:l, mode:S.mode});
     setLang(sel==="auto"? null : g.lang); if(sel!=="auto") setLang(g.lang);
     bubble("assistant", g.reply, sel==="auto"?"Speak in any language — Sakhi will switch to it.":g.reply_en);
-    S.history.push({role:"assistant",content:g.reply});
+    (loan ? S.loanHistory : S.history).push({role:"assistant",content:g.reply});
     await play(g.audio);
   }catch(e){ sysMsg("⚠️ "+esc(e.message),true); status("Error"); }
 }
@@ -266,14 +315,24 @@ async function startCall(){
 async function sendText(text, mine=true, detected=null){
   text=(text||"").trim(); if(!text||S.busy) return;
   S.busy=true; stopAudio();
+  const loan=isLoan(), hist = loan ? S.loanHistory : S.history;
   const ub = mine ? bubble("user", text, null, detected) : null;
-  S.history.push({role:"user",content:text});
+  hist.push({role:"user",content:text});
   status("Thinking · Sarvam-105B", true, "llm");
   try{
     const lang = $("#lang").value!=="auto" ? $("#lang").value : (detected || S.lang || "hi-IN");
-    const r = await api("/api/turn",{text, history:S.history.slice(0,-1), form:S.form, lang});
+    const r = loan ? await api("/api/loan_ask",{text, history:hist.slice(0,-1), lang})
+                   : await api("/api/turn",{text, history:hist.slice(0,-1), form:S.form, lang});
     if(ub && r.user_en && r.user_en!=="(mock)") ub.insertAdjacentHTML("beforeend",`<span class="en">${esc(r.user_en)}</span>`);
     if($("#lang").value==="auto") setLang(r.lang);
+    if(loan){
+      bubble("assistant", r.reply, r.reply_en && r.reply_en!=="(mock)" ? r.reply_en : null);
+      hist.push({role:"assistant",content:r.reply});
+      if(r.loan){ S.loan=r.loan; renderLoan(r.topic); }
+      S.busy=false;
+      await play(r.audio);
+      return;
+    }
     const changed = Object.keys(r.form||{});
     S.form = r.form_full || Object.assign(S.form, r.form||{});
     renderForm(changed);
@@ -283,7 +342,7 @@ async function sendText(text, mine=true, detected=null){
     if(r.done && !S.done){ S.done=true; sysMsg("✅ Interview complete. Next: show a passbook or salary slip (Step 2)."); }
     S.busy=false;
     await play(r.audio);
-  }catch(e){ S.busy=false; S.history.pop(); sysMsg("⚠️ "+esc(e.message),true); status("Error — try again"); }
+  }catch(e){ S.busy=false; hist.pop(); sysMsg("⚠️ "+esc(e.message),true); status("Error — try again"); }
 }
 
 // ---------- mic -> 16k wav -> Saaras
@@ -337,8 +396,18 @@ const DEMO = [
   "कोई गिरवी नहीं है, बस दुकान है। उम्र मेरी बयालीस साल है।",
   "हाँ जी, सब बता दिया।"
 ];
+const LOAN_DEMO = [
+  "मेरी अगली किस्त कब है और कितने की है?",
+  "पूरे लोन पर total interest कितना लग रहा है?",
+  "अभी कितनी EMI बाकी हैं?"
+];
 async function runDemo(){
-  $("#demo").disabled=true;
+  $("#demo").disabled=true; S.demo=true;
+  if(isLoan()){
+    if(!S.loanStarted) await startCall();
+    for(const line of LOAN_DEMO){ await new Promise(r=>setTimeout(r,500)); await sendText(line, true, "hi-IN"); }
+    S.demo=false; $("#demo").disabled=false; return;
+  }
   if(!S.started) await startCall();
   for(const line of DEMO){
     if(S.done) break;
@@ -346,7 +415,56 @@ async function runDemo(){
     await sendText(line, true, "hi-IN");
   }
   if(!S.docFile) await useSample();
-  $("#demo").disabled=false;
+  S.demo=false; $("#demo").disabled=false;
+}
+
+// ---------- running loan
+const QUICK = {
+  next:      {hi:"मेरी अगली किस्त कब है और कितने की है?", en:"When is my next installment and how much is it?"},
+  interest:  {hi:"पूरे लोन पर कुल ब्याज कितना है?",        en:"How much total interest am I paying on this loan?"},
+  remaining: {hi:"कितनी EMI बाकी हैं?",                    en:"How many EMIs are remaining?"}};
+async function quickAsk(key){
+  if(S.busy) return;
+  if(!S.loanStarted) await startCall();
+  const lang = $("#lang").value!=="auto" ? $("#lang").value : (S.lang || "hi-IN");
+  await sendText(QUICK[key][lang==="hi-IN" ? "hi" : "en"], true);
+}
+async function loadLoan(){
+  try{ S.loan = await api("/api/loan",{}); renderLoan(); }
+  catch(e){ $("#loanCard").innerHTML=`<div class="err">${esc(e.message)}</div>`; }
+}
+function renderLoan(topic){
+  const L=S.loan; if(!L) return;
+  const nx=L.next_installment;
+  const tiles=[
+    ["next_installment","Next installment", nx?inr(nx.emi):"—", nx?`due ${nx.due_date_text} · in ${nx.days_left} days`:"loan closed"],
+    ["next_installment","Next EMI split", nx?`${inr(nx.principal)} + ${inr(nx.interest)}`:"—", "principal + interest"],
+    ["remaining_emis","EMIs remaining", `${L.emis_remaining} of ${L.tenure_months}`, `${L.emis_paid} paid · last on ${L.last_emi_text}`],
+    ["outstanding","Outstanding principal", inr(L.outstanding_principal), `of ${inr(L.principal)} borrowed`],
+    ["total_interest","Total interest", inr(L.total_interest), `${inr(L.interest_paid)} paid · ${inr(L.interest_remaining)} left`],
+    ["total_interest","Total payable", inr(L.total_payable), `${inr(L.amount_remaining)} still to pay`]];
+  $("#loanMeta").textContent = `as of ${L.today_text}`;
+  $("#loanCard").innerHTML=`
+    <div class="loan-head"><span>Loan <b>${esc(L.loan_id)}</b></span><span>Borrower <b>${esc(L.borrower)}</b></span>
+      <span><b>${esc(L.product)}</b></span><span><b>${inr(L.principal)}</b> @ <b>${L.interest_rate_pct}%</b> × <b>${L.tenure_months}m</b></span>
+      <span>EMI <b>${inr(L.emi)}</b> · ${esc(L.repayment_mode)}</span></div>
+    <div class="progress"><i style="width:${L.emis_paid/L.tenure_months*100}%"></i></div>
+    <div class="tiles">${tiles.map(([k,t,v,sub])=>`<div class="tile${k===topic?" flash":""}"><small>${t}</small><b>${esc(v)}</b><span>${esc(sub)}</span></div>`).join("")}</div>
+    <div class="sched"><table><tr><th>#</th><th>Due date</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Balance after</th><th>Status</th></tr>
+      ${L.schedule.map(x=>`<tr class="${x.status}"><td>${x.no}</td><td>${esc(x.due_date_text)}</td><td>${inr(x.emi)}</td><td>${inr(x.principal)}</td><td>${inr(x.interest)}</td><td>${inr(x.balance_after)}</td><td>${{paid:"✅ Paid",next:"⏭ Next",due:"Upcoming"}[x.status]}</td></tr>`).join("")}
+    </table></div>`;
+  const sc=$("#loanCard .sched"), row=sc.querySelector("tr.next");
+  if(row) sc.scrollTop = row.offsetTop - 70;
+  if(topic) setTimeout(()=>document.querySelectorAll(".tile.flash").forEach(e=>e.classList.remove("flash")),2000);
+}
+function setMode(m){
+  if(S.mode===m || S.busy || S.demo || S.rec) return;
+  stopAudio(); status("Ready"); S.mode=m;
+  $("#mApply").classList.toggle("on",m==="apply"); $("#mLoan").classList.toggle("on",m==="loan");
+  for(const [id,show] of [["#chat",m==="apply"],["#applyView",m==="apply"],["#chatLoan",m==="loan"],["#loanView",m==="loan"],["#quick",m==="loan"]])
+    $(id).classList.toggle("hidden",!show);
+  syncControls();
+  if(m==="loan" && !S.loan) loadLoan();
 }
 
 // ---------- document
@@ -444,6 +562,9 @@ $("#file").onchange=e=>e.target.files[0]&&setDoc(e.target.files[0]);
 $("#sample").onclick=useSample;
 $("#readDoc").onclick=readDoc;
 $("#memoBtn").onclick=makeMemo;
+$("#mApply").onclick=()=>setMode("apply");
+$("#mLoan").onclick=()=>setMode("loan");
+document.querySelectorAll("#quick button").forEach(b=>b.onclick=()=>quickAsk(b.dataset.q));
 renderForm();
 fetch("/api/health").then(r=>r.json()).then(h=>{
   if(!h.key_loaded && !h.mock) sysMsg("⚠️ No SARVAM_API_KEY found. Add it to the .env file and restart.",true);

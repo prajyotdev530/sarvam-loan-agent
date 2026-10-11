@@ -40,6 +40,21 @@ Open **http://localhost:8000** in Chrome. The key is read from `.env` (`SARVAM_A
    - Two HIGH mismatches are flagged, the share of income going to EMIs is above 50%, and the result is **Approve reduced amount (about ₹1L instead of ₹2L)**.
    - The borrower hears the decision in Hindi.
 
+## Running-loan mode: "My running loan"
+After disbursal, the same borrower can call Sakhi back and ask, in any language:
+- **Next installment**: amount, due date, and the principal and interest split
+- **Total interest**: over the whole loan, how much is paid so far, and how much is left
+- **Remaining EMIs**: how many are paid, how many are left, and when the last one falls due
+
+Switch to **💳 My running loan** in the phone panel. Then tap a quick question, speak, or press **Demo Qs**. The lender side shows the account summary and the full repayment schedule, and highlights the figures Sakhi just quoted.
+
+For now this uses a **sample loan** (`SAMPLE_LOAN` in `server.py`): Ramesh's ₹1,00,000 reduced approval at 22% over 24 months, first EMI on 5 May 2026. Every EMI whose due date has passed counts as paid. The schedule is reducing-balance amortisation, computed in code (`loan_status()`). The model only reads those numbers back in the borrower's language and never calculates figures itself. To use real data, replace `SAMPLE_LOAN`/`loan_status()` with a lookup in your loan book.
+
+| Endpoint | What it does |
+|---|---|
+| `POST /api/loan` | Loan summary and full schedule (works without a Sarvam key) |
+| `POST /api/loan_ask` | `{text, history, lang}` → Sakhi's spoken answer, plus `topic` and the refreshed loan |
+
 ## Why it matters
 - **Inclusion:** a borrower who cannot read the form can still apply in their own language.
 - **Trust:** every decision is explainable, with the evidence shown beside each claim.

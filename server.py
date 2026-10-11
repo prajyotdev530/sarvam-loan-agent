@@ -5,12 +5,14 @@ Voice-first loan interview in any Indian language + document cross-check, built 
 
   Saaras (speech-to-text, auto language detect)  ->  Sarvam-105B (interview brain + underwriting)
   Bulbul v3 (voice of the loan officer)          ->  Sarvam Vision (reads passbook / salary slip)
+  Running-loan mode: ask about next installment, total interest, remaining EMIs (schedule computed in code)
 
 Run:   pip3 install -r requirements.txt   (only needed for Sarvam Vision)
        python3 server.py                  -> open http://localhost:8000
 Key:   put SARVAM_API_KEY=... in .env (never commit it)
 """
 import base64
+import calendar
 import io
 import json
 import math
@@ -23,6 +25,7 @@ import urllib.error
 import urllib.request
 import uuid
 import zipfile
+from datetime import date, datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -351,6 +354,117 @@ Return ONLY JSON with these keys (null if not present; numbers as plain integers
 For passbooks/statements: avg_monthly_credits = total credits / number of months covered. Look for EMI/loan/NACH/ECS/ACH debits and list them in emi_details."""
 
 
+# ----------------------------------------------------------------------------- Running loan (servicing)
+# Sample active loan used until a real loan book is connected: Ramesh's reduced approval from the demo, already disbursed.
+# Every EMI whose due date has passed is treated as paid (NACH auto-debit succeeded).
+SAMPLE_LOAN = {
+    "loan_id": "BKL-2026-00417",
+    "borrower": "Ramesh S Patil",
+    "product": "Micro-enterprise loan (kirana fridge + stock)",
+    "principal": 100000,
+    "annual_rate": ANNUAL_RATE,
+    "tenure_months": 24,
+    "disbursed_on": "2026-04-05",
+    "first_emi_on": "2026-05-05",
+    "repayment_mode": "NACH auto-debit",
+}
+IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def add_months(d, n):
+    m = d.month - 1 + n
+    y, m = d.year + m // 12, m % 12 + 1
+    return d.replace(year=y, month=m, day=min(d.day, calendar.monthrange(y, m)[1]))
+
+
+def date_text(d):
+    return f"{d.day} {d.strftime('%B %Y')}"
+
+
+def loan_schedule(loan):
+    """Reducing-balance amortisation with the EMI rounded to the rupee; the last EMI absorbs the rounding."""
+    r = loan["annual_rate"] / 12
+    n = loan["tenure_months"]
+    inst = round(emi(loan["principal"], n, loan["annual_rate"]))
+    first = date.fromisoformat(loan["first_emi_on"])
+    bal, rows = loan["principal"], []
+    for i in range(n):
+        interest = round(bal * r)
+        principal = bal if i == n - 1 else min(inst - interest, bal)
+        bal -= principal
+        due = add_months(first, i)
+        rows.append({"no": i + 1, "due_date": due.isoformat(), "due_date_text": date_text(due),
+                     "emi": principal + interest, "principal": principal, "interest": interest, "balance_after": bal})
+    return inst, rows
+
+
+def loan_status(loan=SAMPLE_LOAN, today=None):
+    today = today or datetime.now(IST).date()
+    inst, rows = loan_schedule(loan)
+    for row in rows:
+        row["status"] = "paid" if date.fromisoformat(row["due_date"]) <= today else "due"
+    paid = [x for x in rows if x["status"] == "paid"]
+    due = [x for x in rows if x["status"] == "due"]
+    nxt = None
+    if due:
+        due[0]["status"] = "next"
+        nxt = dict(due[0], days_left=(date.fromisoformat(due[0]["due_date"]) - today).days)
+    total_interest = sum(x["interest"] for x in rows)
+    interest_paid = sum(x["interest"] for x in paid)
+    return {
+        "loan_id": loan["loan_id"], "borrower": loan["borrower"], "product": loan["product"],
+        "repayment_mode": loan["repayment_mode"], "today": today.isoformat(), "today_text": date_text(today),
+        "status": "running" if due else "closed",
+        "principal": loan["principal"], "interest_rate_pct": round(loan["annual_rate"] * 100, 2),
+        "tenure_months": loan["tenure_months"], "disbursed_on": loan["disbursed_on"],
+        "emi": inst, "emis_paid": len(paid), "emis_remaining": len(due), "next_installment": nxt,
+        "outstanding_principal": paid[-1]["balance_after"] if paid else loan["principal"],
+        "total_interest": total_interest, "interest_paid": interest_paid,
+        "interest_remaining": total_interest - interest_paid,
+        "total_payable": loan["principal"] + total_interest,
+        "amount_paid": sum(x["emi"] for x in paid), "amount_remaining": sum(x["emi"] for x in due),
+        "last_emi_on": rows[-1]["due_date"], "last_emi_text": rows[-1]["due_date_text"],
+        "schedule": rows,
+    }
+
+
+LOAN_SYSTEM = """You answer a borrower's questions about their RUNNING loan. You are "Sakhi", a warm loan officer at a micro-finance lender in India, on a VOICE call.
+
+Rules:
+- Reply ONLY in the borrower's language (code: {lang}), even if the question was typed in English. Use simple, everyday spoken words in native script; mirror Hinglish if they use it.
+- At most 3 short sentences, under 260 characters. It will be spoken aloud.
+- Use ONLY the numbers and dates in the loan record below. Never calculate new figures or guess. Say amounts as rupees (e.g. "4,500 रुपये") and dates as day + month name.
+- You can answer: next installment (amount, due date, principal/interest split), total interest, interest paid / remaining, EMIs paid / remaining, outstanding principal, when the loan ends, upcoming installments.
+- For anything not in the record (changing the EMI date, prepayment charges, a new loan, a complaint), say a branch officer will call them back. Never promise waivers.
+- If the question is unclear, ask whether they want the next installment, total interest, or remaining EMIs.
+
+Loan record (JSON, computed by the lender's system): {loan}
+
+Reply with ONLY a JSON object, no other text:
+{{"reply": "<answer in the borrower's language>", "reply_en": "<English translation of reply>", "user_en": "<English translation of the borrower's question>", "lang": "<BCP-47 code, e.g. hi-IN>", "topic": "next_installment|total_interest|remaining_emis|outstanding|schedule|other"}}"""
+
+LOAN_GREETINGS = {
+    "hi-IN": "नमस्ते! मैं सखी हूँ। आपका लोन चल रहा है। अगली किस्त, कुल ब्याज या बाकी EMI के बारे में कुछ भी पूछिए।",
+    "mr-IN": "नमस्कार! मी सखी. तुमचं कर्ज चालू आहे. पुढचा हप्ता, एकूण व्याज किंवा बाकी EMI बद्दल काहीही विचारा.",
+    "ta-IN": "வணக்கம்! நான் சகி. உங்கள் கடன் நடப்பில் உள்ளது. அடுத்த தவணை, மொத்த வட்டி அல்லது மீதமுள்ள EMI பற்றி எதுவும் கேளுங்கள்.",
+    "te-IN": "నమస్కారం! నేను సఖి. మీ లోన్ నడుస్తోంది. తదుపరి వాయిదా, మొత్తం వడ్డీ లేదా మిగిలిన EMIల గురించి ఏదైనా అడగండి.",
+    "kn-IN": "ನಮಸ್ಕಾರ! ನಾನು ಸಖಿ. ನಿಮ್ಮ ಸಾಲ ಚಾಲ್ತಿಯಲ್ಲಿದೆ. ಮುಂದಿನ ಕಂತು, ಒಟ್ಟು ಬಡ್ಡಿ ಅಥವಾ ಉಳಿದ EMI ಬಗ್ಗೆ ಏನು ಬೇಕಾದರೂ ಕೇಳಿ.",
+    "bn-IN": "নমস্কার! আমি সখী। আপনার লোন চলছে। পরের কিস্তি, মোট সুদ বা বাকি EMI নিয়ে যা খুশি জিজ্ঞেস করুন।",
+    "gu-IN": "નમસ્તે! હું સખી. તમારી લોન ચાલુ છે. આગામી હપ્તો, કુલ વ્યાજ કે બાકી EMI વિશે કંઈ પણ પૂછો.",
+    "ml-IN": "നമസ്കാരം! ഞാൻ സഖി. നിങ്ങളുടെ ലോൺ നടന്നുകൊണ്ടിരിക്കുന്നു. അടുത്ത തവണ, ആകെ പലിശ, ബാക്കി EMI എന്നിവയെക്കുറിച്ച് എന്തും ചോദിക്കൂ.",
+    "pa-IN": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਸਖੀ ਹਾਂ। ਤੁਹਾਡਾ ਲੋਨ ਚੱਲ ਰਿਹਾ ਹੈ। ਅਗਲੀ ਕਿਸ਼ਤ, ਕੁੱਲ ਵਿਆਜ ਜਾਂ ਬਾਕੀ EMI ਬਾਰੇ ਕੁਝ ਵੀ ਪੁੱਛੋ।",
+    "od-IN": "ନମସ୍କାର! ମୁଁ ସଖୀ। ଆପଣଙ୍କ ଋଣ ଚାଲୁ ଅଛି। ପରବର୍ତ୍ତୀ କିସ୍ତି, ମୋଟ ସୁଧ କିମ୍ବା ବାକି EMI ବିଷୟରେ କିଛି ବି ପଚାରନ୍ତୁ।",
+    "en-IN": "Hello! I'm Sakhi. Your loan is running. Ask me anything about your next installment, total interest or remaining EMIs.",
+}
+
+
+def loan_context(st):
+    """What the LLM sees: the summary plus the next few installments, not the full schedule."""
+    ctx = {k: v for k, v in st.items() if k != "schedule"}
+    ctx["upcoming_installments"] = [x for x in st["schedule"] if x["status"] != "paid"][:3]
+    return ctx
+
+
 # ----------------------------------------------------------------------------- API handlers
 def api_turn(body):
     lang = body.get("lang") or "hi-IN"
@@ -395,10 +509,44 @@ def api_stt(body):
 
 def api_greet(body):
     lang = body.get("lang") or "hi-IN"
-    if lang not in GREETINGS:
+    greetings = LOAN_GREETINGS if body.get("mode") == "loan" else GREETINGS
+    if lang not in greetings:
         lang = "hi-IN"
-    text = GREETINGS[lang]
-    return {"reply": text, "reply_en": GREETINGS["en-IN"], "lang": lang, "audio": tts(text, lang)}
+    text = greetings[lang]
+    return {"reply": text, "reply_en": greetings["en-IN"], "lang": lang, "audio": tts(text, lang)}
+
+
+def api_loan(body):
+    return loan_status()
+
+
+def api_loan_ask(body):
+    lang = body.get("lang") or "hi-IN"
+    history = body.get("history") or []
+    text = (body.get("text") or "").strip()
+    st = loan_status()
+    sys_msg = LOAN_SYSTEM.format(lang=lang, loan=json.dumps(loan_context(st), ensure_ascii=False))
+    msgs = [{"role": "system", "content": sys_msg}]
+    for h in history[-10:]:
+        role = "assistant" if h.get("role") == "assistant" else "user"
+        if len(msgs) > 1 and msgs[-1]["role"] == role:
+            msgs[-1]["content"] += "\n" + h.get("content", "")
+        else:
+            msgs.append({"role": role, "content": h.get("content", "")})
+    if msgs[-1]["role"] == "user":
+        msgs[-1]["content"] += "\n" + text
+    else:
+        msgs.append({"role": "user", "content": text})
+    content, model = chat(msgs, json_mode=True, max_tokens=800)
+    try:
+        out = parse_json(content)
+    except Exception:
+        out = {"reply": content.strip()[:300], "topic": "other"}
+    out["lang"] = out.get("lang") if out.get("lang") in TTS_LANGS else lang
+    out["loan"] = st
+    out["audio"] = tts(out.get("reply", ""), out["lang"])
+    out["model"] = model
+    return out
 
 
 def api_doc(body):
@@ -428,7 +576,9 @@ def api_memo(body):
     return memo
 
 
-ROUTES = {"/api/turn": api_turn, "/api/stt": api_stt, "/api/greet": api_greet, "/api/doc": api_doc, "/api/memo": api_memo}
+ROUTES = {"/api/turn": api_turn, "/api/stt": api_stt, "/api/greet": api_greet, "/api/doc": api_doc, "/api/memo": api_memo,
+          "/api/loan": api_loan, "/api/loan_ask": api_loan_ask}
+NO_KEY_ROUTES = {"/api/loan"}  # pure computation, works without a Sarvam key
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -462,10 +612,11 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, f.read(), ctype)
 
     def do_POST(self):
-        fn = ROUTES.get(self.path.split("?")[0])
+        path = self.path.split("?")[0]
+        fn = ROUTES.get(path)
         if not fn:
             return self._send(404, {"error": "not found"})
-        if not API_KEY and not MOCK:
+        if not API_KEY and not MOCK and path not in NO_KEY_ROUTES:
             return self._send(500, {"error": "SARVAM_API_KEY missing. Put it in the .env file next to server.py"})
         try:
             n = int(self.headers.get("Content-Length") or 0)
@@ -497,8 +648,28 @@ MOCK_PASSBOOK_MD = """SAHYADRI GRAMIN SAHAKARI BANK (SAMPLE)  Account holder: RA
 _mock_i = {"n": 0}
 
 
+def mock_loan_answer(question):
+    st, q = loan_status(), question.lower()
+    nx = st["next_installment"] or {}
+    if re.search(r"ब्याज|व्याज|byaj|byaaj|vyaj|interest", q):
+        topic = "total_interest"
+        reply = (f"पूरे लोन पर कुल ब्याज {st['total_interest']:,} रुपये है। अब तक {st['interest_paid']:,} रुपये भर चुके हैं, "
+                 f"{st['interest_remaining']:,} रुपये बाकी है।")
+    elif re.search(r"बाकी|बची|baaki|baki|remaining|left|kitni emi|कितनी", q):
+        topic = "remaining_emis"
+        reply = f"आपकी {st['emis_paid']} EMI भर चुकी हैं और {st['emis_remaining']} EMI बाकी हैं। आखिरी किस्त {st['last_emi_text']} को है।"
+    else:
+        topic = "next_installment"
+        reply = (f"आपकी अगली किस्त {nx.get('emi', 0):,} रुपये की है, जो {nx.get('due_date_text', '-')} को कटेगी। "
+                 f"इसमें {nx.get('interest', 0):,} रुपये ब्याज और {nx.get('principal', 0):,} रुपये मूलधन है।")
+    return json.dumps({"reply": reply, "reply_en": "(mock)", "user_en": "(mock)", "lang": "hi-IN", "topic": topic},
+                      ensure_ascii=False)
+
+
 def mock_chat(messages):
     sysm = messages[0]["content"]
+    if sysm.startswith("You answer"):
+        return mock_loan_answer(messages[-1]["content"])
     if sysm.startswith("You extract"):
         return json.dumps({"doc_type": "Bank passbook", "account_holder_name": "Ramesh S Patil",
                            "bank_or_employer": "Sahyadri Gramin Sahakari Bank", "period": "Jul-Sep",
